@@ -7,4 +7,8 @@ public class PaymentService {
 
     public void pay() {
     }
+
+    public String status() {
+        return "TODO";
+    }
 }

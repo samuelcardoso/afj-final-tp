@@ -1,10 +1,7 @@
 package br.puc.tp_final.payment;
 
 import jakarta.ejb.EJB;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 
 @Path("payment")
 @Produces({"application/json"})
@@ -14,8 +11,16 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @POST
+    @Path("pay")
     @Consumes("application/json")
     public void pay() {
         paymentService.pay();
+    }
+
+    @GET
+    @Path("/status/{id}")
+    @Consumes("application/json")
+    public String status() {
+        return paymentService.status();
     }
 }

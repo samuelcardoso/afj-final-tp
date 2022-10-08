@@ -10,9 +10,17 @@ public class StockController {
     @EJB
     private StockService stockService;
 
-    @GET
+    @POST
+    @Path("write_off")
     @Consumes("application/json")
-    public String pay() {
+    public void pay() {
+        stockService.write_off();
+    }
+
+    @GET
+    @Path("/status/{id}")
+    @Consumes("application/json")
+    public String status() {
         return stockService.status();
     }
 }

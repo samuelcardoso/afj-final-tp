@@ -34,7 +34,25 @@ gradle clean bootRun --settings-file track-ms/settings.gradle.kts&
 TRACK_MS_PID=$!
 
 echo "[Testing]"
-sleep 60
+sleep 30
+
+purchase_ms_buy_id=$(curl -s --request POST --url http://localhost:8081/purchase-ms/rest/purchase/buy | tr -d '"')
+echo $purchase_ms_buy_id
+
+payment_ms_status=$(curl -o /dev/null -s -w "%{http_code}\n" --request GET --url http://localhost:8080/payment-ms/rest/payment/status/$purchase_ms_buy_id)
+echo $payment_ms_status
+
+stock_ms_status=$(curl -o /dev/null -s -w "%{http_code}\n" --request GET --url http://localhost:8080/stock-ms/rest/stock/status/$purchase_ms_buy_id)
+echo $stock_ms_status
+
+track_ms_status=$(curl -o /dev/null -s -w "%{http_code}\n" --request GET --url http://localhost:8082/track-ms/rest/track/status/$purchase_ms_buy_id)
+echo $track_ms_status
+
+if [ "$track_ms_status" == "200" ]; then
+    echo "OK"
+else
+    echo "Not OK!"
+fi
 
 echo "[Shutting down]"
 
