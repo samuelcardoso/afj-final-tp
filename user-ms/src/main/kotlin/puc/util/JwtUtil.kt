@@ -1,32 +1,19 @@
 package puc.util
 
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.stereotype.Component
-import puc.user.User
-import java.util.*
+import puc.user.SessionToken
 
 @Component
 class JwtUtil {
 
-    private val secretKey = "mySecretKey"
+    private val sampleJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 
-    fun generateToken(user: User): String {
-        return Jwts.builder()
-            .setSubject(user.id.toString())
-            .setIssuedAt(Date())
-            .setExpiration(Date(System.currentTimeMillis() + 86400000)) // 1 dia
-            .signWith(SignatureAlgorithm.HS256, secretKey)
-            .compact()
+    fun generateToken(sessionToken: SessionToken): String {
+        return sampleJWT
     }
 
     fun validateToken(token: String): Boolean {
-        val claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
-        return !claims.body.expiration.before(Date())
+        return true
     }
 
-    fun extractUserId(token: String): Long {
-        val claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
-        return claims.body.subject.toLong()
-    }
 }

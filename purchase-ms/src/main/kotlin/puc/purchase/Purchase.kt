@@ -1,11 +1,9 @@
-package puc.user
+package puc.purchase
 
 import jakarta.persistence.*
 
 @Entity
-data class User(
+data class Purchase(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val username: String,
-    val password: String
 )

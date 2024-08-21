@@ -9,5 +9,4 @@ data class Product(
     val id: String? = null,
     val name: String,
     val price: Double,
-    val stock: Int
 )

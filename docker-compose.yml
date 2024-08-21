@@ -9,10 +9,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: productsdb
     networks:
       - spring-net
     volumes:
       - mongo_data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
 
   mongo-express:
     image: mongo-express
@@ -38,14 +40,73 @@ services:
     networks:
       - spring-net
 
-  squirrel-sql:
-    image: dyokomizo/squirrel
-    container_name: squirrel-sql
+  purchase-ms-db:
+    image: mysql:8.0
+    container_name: purchase-ms-db
     ports:
-      - "8091:8080"
-      - "5901:5901"
+      - "3307:3306"
     environment:
-      VNC_PASSWORD: "vncpassword"
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: purchasedb
+    networks:
+      - spring-net
+    volumes:
+      - purchase_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  stock-ms-db:
+    image: mysql:8.0
+    container_name: stock-ms-db
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: stockdb
+    networks:
+      - spring-net
+    volumes:
+      - stock_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  user-ms-db:
+    image: mysql:8.0
+    container_name: user-ms-db
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: userdb
+    networks:
+      - spring-net
+    volumes:
+      - user_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+    volumes:
+      - ./scripts/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    depends_on:
+      - purchase-ms-db
+      - stock-ms-db
+      - user-ms-db
+    ports:
+      - "8091:80"
     networks:
       - spring-net
 
@@ -54,3 +115,6 @@ networks:
 
 volumes:
   mongo_data:
+  purchase_data:
+  stock_data:
+  user_data:

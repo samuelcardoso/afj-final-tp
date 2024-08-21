@@ -1,4 +1,5 @@
-docker-compose up
+docker-compose down -v
+docker-compose up --build
 
 URLs:
 
@@ -7,10 +8,8 @@ http://localhost:8090
 user: admin
 pass: pass
 
-HSQLDB
-Intellij
-Ctrl+Alt+s
-Database Tools and SQL
+MySQL:
+http://localhost:8091
 
 RabbitMQ:
 http://localhost:15672
