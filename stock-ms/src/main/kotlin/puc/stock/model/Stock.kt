@@ -1,4 +1,4 @@
-package puc.stock
+package puc.stock.model
 
 import jakarta.persistence.*
 

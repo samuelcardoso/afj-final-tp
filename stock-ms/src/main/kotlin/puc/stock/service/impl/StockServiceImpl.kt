@@ -1,13 +1,15 @@
-package puc.stock
+package puc.stock.service.impl
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import puc.stock.repository.StockRepository
+import puc.stock.service.StockService
 
 @Service
-class StockService(val stockRepository: StockRepository) {
+class StockServiceImpl(val stockRepository: StockRepository) : StockService {
 
     @Transactional
-    fun writeDownStock(productId: String, quantity: Int) {
+    override fun writeDownStock(productId: String, quantity: Int) {
         val stock = stockRepository.findByProductId(productId)
             ?: throw IllegalArgumentException("Product not found")
 

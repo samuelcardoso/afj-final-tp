@@ -1,6 +1,7 @@
-package puc.stock
+package puc.stock.controller
 
 import org.springframework.web.bind.annotation.*
+import puc.stock.service.StockService
 
 @RestController
 @RequestMapping("/write-down")
