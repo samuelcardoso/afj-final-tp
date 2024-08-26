@@ -1,4 +1,4 @@
-package puc.products
+package puc.products.domain
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
