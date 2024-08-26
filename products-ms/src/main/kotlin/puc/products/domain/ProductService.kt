@@ -7,14 +7,14 @@ import puc.products.out.database.ProductRepository
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class ProductService(val productRepository: ProductRepository) {
+class ProductService(val productRepository: ProductRepository) : IProductService{
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    fun findAll(): List<Product> = productRepository.findAll().map { it.toDomain() }
+    override fun findAll(): List<Product> = productRepository.findAll().map { it.toDomain() }
 
     fun findById(id: String): Product? = productRepository.findById(id).getOrNull()?.toDomain()
 
-    fun save(product: Product): Product {
+    override fun save(product: Product): Product {
         logger.info("Saving product with name ${product.name}")
 
         val result = productRepository.save(ProductEntity(product)).toDomain()
@@ -23,4 +23,13 @@ class ProductService(val productRepository: ProductRepository) {
 
         return result
     }
+
+    override fun delete(productId: String) {
+        productRepository.deleteById(productId)
+    }
+
+    override fun update() {
+        TODO("Not yet implemented")
+    }
 }
+

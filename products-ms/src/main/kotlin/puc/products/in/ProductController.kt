@@ -1,23 +1,39 @@
 package puc.products.`in`
 
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.util.UriComponentsBuilder
+import puc.products.domain.IProductService
 import puc.products.domain.Product
-import puc.products.domain.ProductService
 
 @RestController
 @RequestMapping("/products")
-class ProductController(val productService: ProductService) {
+class ProductController(val productService: IProductService) {
 
     @GetMapping
-    fun getAllProducts(): List<Product> = productService.findAll()
+    fun getAllProducts(): ResponseEntity<List<Product>> {
+        val response = productService.findAll()
+
+        return ResponseEntity.ok(response)
+    }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): Product? = productService.findById(id)
 
     @PostMapping
-    fun postProduct(@RequestBody incomingProduct: IncomingProduct): Product{
+    fun postProduct(
+        @RequestBody incomingProduct: IncomingProduct,
+        uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
         val product = incomingProduct.toDomain()
 
-        return productService.save(product)
+        val result =  productService.save(product)
+        val location = uriComponentsBuilder.path("/products/{id}").buildAndExpand(result.id).toUri()
+        return ResponseEntity.created(location).build()
+    }
+
+    @DeleteMapping("/{idProduct}")
+    fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
+        productService.delete(idProduct)
+        return ResponseEntity.noContent().build()
     }
 }
