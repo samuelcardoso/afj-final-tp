@@ -11,6 +11,9 @@ class ProductController(val productService: ProductService) {
     @GetMapping
     fun getAllProducts(): List<Product> = productService.findAll()
 
+    @GetMapping("/{id}")
+    fun getById(@PathVariable id: String): Product? = productService.findById(id)
+
     @PostMapping
     fun postProduct(@RequestBody incomingProduct: IncomingProduct): Product{
         val product = incomingProduct.toDomain()
