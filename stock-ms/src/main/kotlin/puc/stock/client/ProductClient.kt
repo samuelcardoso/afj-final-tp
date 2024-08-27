@@ -6,7 +6,7 @@ import org.springframework.web.service.annotation.HttpExchange
 import puc.stock.resources.ProductResource
 import java.util.*
 
-@HttpExchange(url = "http://localhost:8080/products")
+@HttpExchange()
 interface ProductClient {
 
     @GetExchange("/{id}")

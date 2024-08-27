@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import puc.stock.exception.NotEnoughStockException
-import puc.stock.exception.ProductFoundException
+import puc.stock.exception.ProductAlreadyExistsException
 import puc.stock.exception.ProductNotFoundException
 
 @ControllerAdvice
@@ -37,13 +37,15 @@ class ValidationExceptionHandler {
     @ExceptionHandler(ProductNotFoundException::class)
     fun productNotFoundExceptionHandler(exception: ProductNotFoundException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ErrorResponse(
-                System.currentTimeMillis(),
-                HttpStatus.NOT_FOUND.value(),
-                exception.message,
-                HttpStatus.NOT_FOUND.name,
-                request.requestURI
-            ))
+            .body(exception.message?.let {
+                ErrorResponse(
+                    System.currentTimeMillis(),
+                    HttpStatus.NOT_FOUND.value(),
+                        it,
+                    HttpStatus.NOT_FOUND.name,
+                    request.requestURI
+                )
+            })
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -60,8 +62,8 @@ class ValidationExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(ProductFoundException::class)
-    fun productFoundExceptionHandler(exception: ProductFoundException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(ProductAlreadyExistsException::class)
+    fun productFoundExceptionHandler(exception: ProductAlreadyExistsException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(ErrorResponse(
                 System.currentTimeMillis(),

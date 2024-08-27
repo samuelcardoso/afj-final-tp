@@ -17,11 +17,11 @@ class StockController(val stockService: StockService) {
     @PatchMapping("/write-down")
     @ResponseStatus(HttpStatus.OK)
     fun writeDown(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
-        return stockService.writeDownStock(stockUpdateRequest)
+        return ResponseEntity.ok(stockService.writeDownStock(stockUpdateRequest));
     }
 
     @PostMapping("/add-product")
     fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
-        return stockService.addProductStock(stockUpdateRequest)
+        return ResponseEntity.ok(stockService.addProductStock(stockUpdateRequest))
     }
 }
