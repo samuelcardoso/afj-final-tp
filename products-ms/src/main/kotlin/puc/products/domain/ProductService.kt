@@ -2,6 +2,7 @@ package puc.products.domain
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import puc.products.out.database.ProductEntity
 import puc.products.out.database.ProductRepository
 import kotlin.jvm.optionals.getOrNull
 
