@@ -20,6 +20,13 @@ class ProductController(val productService: IProductService) {
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): Product? = productService.findById(id)
 
+    @GetMapping("/{name}")
+    fun getByName(@PathVariable name:String) : ResponseEntity<List<Product>>{
+        val result = productService.findByName(name)
+
+        return ResponseEntity.ok(result)
+    }
+
     @PostMapping
     fun postProduct(
         @RequestBody incomingProduct: IncomingProduct,
@@ -36,4 +43,5 @@ class ProductController(val productService: IProductService) {
         productService.delete(idProduct)
         return ResponseEntity.noContent().build()
     }
+
 }

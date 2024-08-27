@@ -2,7 +2,6 @@ package puc.products.domain
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import puc.products.out.database.ProductEntity
 import puc.products.out.database.ProductRepository
 import kotlin.jvm.optionals.getOrNull
 
@@ -12,7 +11,13 @@ class ProductService(val productRepository: ProductRepository) : IProductService
 
     override fun findAll(): List<Product> = productRepository.findAll().map { it.toDomain() }
 
-    fun findById(id: String): Product? = productRepository.findById(id).getOrNull()?.toDomain()
+    override fun findById(id: String): Product? = productRepository.findById(id).getOrNull()?.toDomain()
+
+    override fun findByName(name: String): List<Product> {
+        val product = productRepository.findByName(name)
+
+        return product.map { it.toDomain() }
+    }
 
     override fun save(product: Product): Product {
         logger.info("Saving product with name ${product.name}")
