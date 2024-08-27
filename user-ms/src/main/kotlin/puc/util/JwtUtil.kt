@@ -1,19 +1,33 @@
 package puc.util
 
+import io.jsonwebtoken.JwtException
+import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
 import puc.user.SessionToken
+import java.util.*
 
 @Component
 class JwtUtil {
-
-    private val sampleJWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    private var key = Jwts.SIG.HS256.key().build()
+    private val expiration = 86400000 // 1 day
 
     fun generateToken(sessionToken: SessionToken): String {
-        return sampleJWT
+        return Jwts.builder()
+            .subject(sessionToken.username)
+            .expiration(Date(System.currentTimeMillis() + expiration))
+            .signWith(key)
+            .compact()
     }
 
     fun validateToken(token: String): Boolean {
-        return true
-    }
+        try {
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
 
+            return true
+        } catch (e: JwtException) {
+            //don't trust the JWT!
+        }
+
+        return false
+    }
 }

@@ -24,6 +24,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    runtimeOnly("org.bouncycastle:bcprov-jdk18on:1.76")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
