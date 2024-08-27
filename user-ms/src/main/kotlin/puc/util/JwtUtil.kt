@@ -22,7 +22,6 @@ class JwtUtil {
     fun validateToken(token: String): Boolean {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
-
             return true
         } catch (e: JwtException) {
             //don't trust the JWT!
