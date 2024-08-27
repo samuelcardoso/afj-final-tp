@@ -26,7 +26,12 @@ dependencies {
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3:2.0.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.mockk:mockk:1.13.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.withType<KotlinCompile> {
