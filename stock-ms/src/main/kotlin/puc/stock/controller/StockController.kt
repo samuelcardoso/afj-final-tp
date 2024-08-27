@@ -1,16 +1,22 @@
 package puc.stock.controller
 
+import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import puc.stock.controller.request.StockUpdateRequest
+import puc.stock.controller.response.StockUpdateResponse
 import puc.stock.service.StockService
 
+@Validated
 @RestController
-@RequestMapping("/write-down")
+@RequestMapping("/stock")
 class StockController(val stockService: StockService) {
 
-    @PostMapping
-    fun writeDown(@RequestBody request: StockRequest) {
-        stockService.writeDownStock(request.productId, request.quantity)
+    @PatchMapping("/write-down")
+    @ResponseStatus(HttpStatus.OK)
+    fun writeDown(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
+        return stockService.writeDownStock(stockUpdateRequest)
     }
 }
-
-data class StockRequest(val productId: String, val quantity: Int)
