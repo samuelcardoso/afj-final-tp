@@ -19,4 +19,9 @@ class StockController(val stockService: StockService) {
     fun writeDown(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
         return stockService.writeDownStock(stockUpdateRequest)
     }
+
+    @PostMapping("/add-product")
+    fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
+        return stockService.addProductStock(stockUpdateRequest)
+    }
 }
