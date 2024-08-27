@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import puc.stock.exception.NotEnoughStockException
+import puc.stock.exception.ProductFoundException
 import puc.stock.exception.ProductNotFoundException
 
 @ControllerAdvice
@@ -54,6 +55,19 @@ class ValidationExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 exception.message,
                 HttpStatus.BAD_REQUEST.name,
+                request.requestURI
+            ))
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ProductFoundException::class)
+    fun productFoundExceptionHandler(exception: ProductFoundException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ErrorResponse(
+                System.currentTimeMillis(),
+                HttpStatus.CONFLICT.value(),
+                exception.message,
+                HttpStatus.CONFLICT.name,
                 request.requestURI
             ))
     }
