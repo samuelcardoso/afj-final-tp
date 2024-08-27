@@ -7,4 +7,6 @@ import puc.stock.controller.request.StockUpdateRequest
 interface StockService {
 
     fun writeDownStock(stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse>
+
+    fun addProductStock(stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse>
 }
