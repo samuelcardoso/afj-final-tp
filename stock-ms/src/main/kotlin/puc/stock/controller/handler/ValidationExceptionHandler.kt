@@ -1,6 +1,7 @@
 package puc.stock.controller.handler
 
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -14,6 +15,8 @@ import puc.stock.exception.ProductNotFoundException
 @ControllerAdvice
 class ValidationExceptionHandler {
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun validationExceptionHandler(exception: MethodArgumentNotValidException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
@@ -21,6 +24,7 @@ class ValidationExceptionHandler {
             exception.fieldErrors
                 .map { fieldError -> FieldMessage(fieldError.field, fieldError.defaultMessage!!) }
 
+        this.loggerFactory("Erro de validação de input", request.requestURI, request.method, HttpStatus.UNPROCESSABLE_ENTITY.value())
         return ResponseEntity.unprocessableEntity().body(
             ValidationErrorResponse(
                 errors,
@@ -36,21 +40,21 @@ class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ProductNotFoundException::class)
     fun productNotFoundExceptionHandler(exception: ProductNotFoundException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+        this.loggerFactory(exception.message, request.requestURI, request.method, HttpStatus.UNPROCESSABLE_ENTITY.value())
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(exception.message?.let {
-                ErrorResponse(
-                    System.currentTimeMillis(),
-                    HttpStatus.NOT_FOUND.value(),
-                        it,
-                    HttpStatus.NOT_FOUND.name,
-                    request.requestURI
-                )
-            })
+            .body(ErrorResponse(
+                System.currentTimeMillis(),
+                HttpStatus.NOT_FOUND.value(),
+                exception.message,
+                HttpStatus.NOT_FOUND.name,
+                request.requestURI
+            ))
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotEnoughStockException::class)
     fun notEnoughStockExceptionHandler(exception: NotEnoughStockException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+        this.loggerFactory(exception.message, request.requestURI, request.method, HttpStatus.UNPROCESSABLE_ENTITY.value())
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse(
                 System.currentTimeMillis(),
@@ -63,7 +67,8 @@ class ValidationExceptionHandler {
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(ProductAlreadyExistsException::class)
-    fun productFoundExceptionHandler(exception: ProductAlreadyExistsException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+    fun productAlreadyExistsExceptionHandler(exception: ProductAlreadyExistsException, request: HttpServletRequest) : ResponseEntity<ErrorResponse> {
+        this.loggerFactory(exception.message, request.requestURI, request.method, HttpStatus.UNPROCESSABLE_ENTITY.value())
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(ErrorResponse(
                 System.currentTimeMillis(),
@@ -72,5 +77,9 @@ class ValidationExceptionHandler {
                 HttpStatus.CONFLICT.name,
                 request.requestURI
             ))
+    }
+
+    fun loggerFactory(message: String?, path: String, method: String, status: Int) {
+        logger.error("==== Error: [{}]. Path: [{}]. Method: [{}]. Code: [{}] ====", message, path, method, status)
     }
 }

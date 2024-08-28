@@ -1,4 +1,4 @@
 package puc.stock.exception
 
-class ProductNotFoundException(message: String) : RuntimeException(message) {
+class ProductNotFoundException(override val message: String) : RuntimeException(message) {
 }
