@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import java.time.LocalDateTime
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import puc.exception.custom.InvalidCredentialsException
@@ -59,4 +60,25 @@ class ExceptionHandler {
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationExceptions(
+        ex: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val errorsMessage: MutableList<String?> = mutableListOf()
+
+        for (error in ex.bindingResult.fieldErrors) {
+            errorsMessage.add(error.defaultMessage)
+        }
+        
+        val errorResponse = ErrorResponse(
+            timestamp = LocalDateTime.now(),
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = errorsMessage.joinToString(separator = ", " ),
+            path = request.requestURI
+        )
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
 }
