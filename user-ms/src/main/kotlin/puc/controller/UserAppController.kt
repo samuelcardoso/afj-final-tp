@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import puc.model.dto.request.LoginRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.LoginResponse
+import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
 import puc.service.UserAppService
 
@@ -39,5 +40,12 @@ class UserAppController(val userService: UserAppService) {
         val auth = SecurityContextHolder.getContext().authentication
         val userDetails = userService.getUserInfo(auth.name)
         return ResponseEntity.ok(userDetails)
+    }
+
+    @PostMapping("/refresh-token")
+    fun refreshToken(): ResponseEntity<RefreshTokenResponse> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val refreshTokenResponse = userService.refreshToken(auth.name)
+        return ResponseEntity.ok(refreshTokenResponse)
     }
 }

@@ -8,6 +8,7 @@ import puc.exception.custom.UserNotFoundException
 import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.LoginResponse
+import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
 import puc.repository.UserAppRepository
 import puc.service.UserAppService
@@ -46,12 +47,12 @@ class UserAppServiceImpl (
         if (!passwordEncoder.matches(password, user.password))
             throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
 
-        var token = jwtUtil.generateToken(user.username, user.roles)
+        val token = jwtUtil.generateToken(user.username, user.roles)
+        val refreshToken = jwtUtil.generateRefreshToken(user.username)
         val expiresIn = jwtUtil.getExpirationTime(token)
         val userDTO = UserMapperUtil.toUserDTO(user)
-        token = BEARER + token
 
-        return LoginResponse(token, expiresIn, userDTO)
+        return LoginResponse(token, BEARER, expiresIn, userDTO, refreshToken)
     }
 
     override fun getUserInfo(username: String): UserResponse {
@@ -60,4 +61,18 @@ class UserAppServiceImpl (
     }
 
     private fun findUserByUsername(username: String) = userRepository.findByUsername(username)
+
+    override fun refreshToken(refreshToken: String): RefreshTokenResponse {
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
+        }
+
+        val username = jwtUtil.getUsernameFromToken(refreshToken)
+        val user = findUserByUsername(username) ?: throw UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND)
+
+        val newToken = jwtUtil.generateToken(user.username, user.roles)
+        val expiresIn = jwtUtil.getExpirationTime(newToken)
+
+        return RefreshTokenResponse(newToken, BEARER, expiresIn, refreshToken)
+    }
 }
