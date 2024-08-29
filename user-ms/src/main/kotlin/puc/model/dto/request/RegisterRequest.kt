@@ -2,6 +2,7 @@ package puc.model.dto.request
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import puc.annotation.StrongPassword
 
 data class RegisterRequest(
     @field:NotBlank(message = "Username is required")
@@ -9,6 +10,6 @@ data class RegisterRequest(
     val username: String,
 
     @field:NotBlank(message = "Password is required")
-    @field:Size(min = 6, message = "Password must be at least 6 characters long")
+    @StrongPassword
     val password: String
 )

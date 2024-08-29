@@ -30,7 +30,6 @@ class UserAppServiceImpl (
     private val passwordEncoder = BCryptPasswordEncoder()
 
     override fun register(request: RegisterRequest) : UserResponse {
-
         if (Objects.nonNull(findUserByUsername(request.username)))
             throw UsernameAlreadyExistsException(MESSAGE_ERRO_USER_ALREADY_EXISTS.format(request.username))
 
