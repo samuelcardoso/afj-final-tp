@@ -1,7 +1,8 @@
-package puc.products.`in`.exception
+package puc.products.application.exception
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import puc.application.exception.ProductsExceptionHandler
 
 class ProductsExceptionHandlerTest{
 

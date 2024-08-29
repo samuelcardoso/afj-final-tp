@@ -1,4 +1,4 @@
-package puc.products.`in`.exception
+package puc.application.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail

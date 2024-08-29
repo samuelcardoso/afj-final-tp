@@ -1,10 +1,11 @@
-package puc.products.`in`
+package puc.application.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import puc.products.domain.IProductService
-import puc.products.domain.Product
+import puc.application.dtos.ProductDTO
+import puc.domain.products.services.IProductService
+import puc.domain.products.model.Product
 
 @RestController
 @RequestMapping("/products")
@@ -29,9 +30,9 @@ class ProductController(val productService: IProductService) {
 
     @PostMapping
     fun postProduct(
-        @RequestBody incomingProduct: IncomingProduct,
+        @RequestBody productDTO: ProductDTO,
         uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
-        val product = incomingProduct.toDomain()
+        val product = productDTO.toDomain()
 
         val result =  productService.save(product)
         val location = uriComponentsBuilder.path("/products/{id}").buildAndExpand(result.id).toUri()

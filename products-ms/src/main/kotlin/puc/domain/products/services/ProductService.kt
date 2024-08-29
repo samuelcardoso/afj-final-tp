@@ -1,18 +1,23 @@
-package puc.products.domain
+package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import puc.products.external.database.ProductEntity
-import puc.products.external.database.ProductRepository
+import puc.domain.products.model.Product
+import puc.infrastructure.repositories.ProductRepository
+import puc.infrastructure.entities.ProductEntity
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class ProductService(val productRepository: ProductRepository) : IProductService{
+class ProductService(val productRepository: ProductRepository) : IProductService {
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    override fun findAll(): List<Product> = productRepository.findAll().map { it.toDomain() }
+    override fun findAll(): List<Product> {
+        return productRepository.findAll().map { it.toDomain() }
+    }
 
-    override fun findById(id: String): Product? = productRepository.findById(id).getOrNull()?.toDomain()
+    override fun findById(id: String): Product? {
+        return productRepository.findById(id).getOrNull()?.toDomain()
+    }
 
     override fun findByName(name: String): List<Product> {
         val product = productRepository.findByName(name)

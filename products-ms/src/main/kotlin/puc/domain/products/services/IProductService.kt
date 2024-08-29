@@ -1,4 +1,6 @@
-package puc.products.domain
+package puc.domain.products.services
+
+import puc.domain.products.model.Product
 
 interface IProductService {
     fun findAll(): List<Product>

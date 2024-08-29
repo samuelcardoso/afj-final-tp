@@ -1,4 +1,7 @@
-package puc.products.domain
+package puc.domain.products.model
+
+import puc.domain.enums.Category
+import java.time.LocalDateTime
 
 data class Product(
     val id: String? = null,
@@ -9,8 +12,9 @@ data class Product(
     val weight:Double,
     val measure:String,
     val color:String,
-    val category: String,
+    val category: Category,
     val brand:String,
+    val dataRegister: LocalDateTime? = null
 ){
     init {
         require(name.isNotBlank()) { "Name must not be blank" }
@@ -21,7 +25,7 @@ data class Product(
         require(!weight.isNaN()) { "Weight must be a nan" }
         require(measure.isNotBlank()) { "Measure must not be blank" }
         require(color.isNotBlank()) { "Color must not be blank" }
-        require(category.isNotBlank()) { "Category must not be blank" }
+        require(category != Category.UNKNOWN) { "Category must not be blank" }
         require(brand.isNotBlank()) { "Brand must not be blank" }
     }
 }
