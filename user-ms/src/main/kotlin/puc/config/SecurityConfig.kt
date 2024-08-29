@@ -20,8 +20,7 @@ class SecurityConfig(
 
     private val permitAllEndpoints = arrayOf(
         "/users/register",
-        "/users/login",
-        "/users/refresh-token",
+        "/users/login"
     )
 
     @Bean
