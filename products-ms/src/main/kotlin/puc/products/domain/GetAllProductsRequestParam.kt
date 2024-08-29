@@ -9,4 +9,7 @@ data class GetAllProductsRequestParam(
     val color:String?,
     val category:String?,
     val brand:String?,
+    val page:Int?,
+    val pageSize:Int?
+
 )

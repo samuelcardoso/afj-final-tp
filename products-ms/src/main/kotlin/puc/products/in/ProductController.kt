@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 import puc.products.domain.GetAllProductsRequestParam
 import puc.products.domain.IProductService
+import puc.products.domain.PaginatedResponse
 import puc.products.domain.Product
 
 @RestController
@@ -21,7 +22,10 @@ class ProductController(val productService: IProductService) {
         @RequestParam(required = false) color: String?,
         @RequestParam(required = false) category: String?,
         @RequestParam(required = false) brand: String?,
-        ): ResponseEntity<List<Product>> {
+        @RequestParam(required = false) page: Int?,
+        @RequestParam(required = false) pageSize: Int?,
+
+        ): ResponseEntity<PaginatedResponse<Product>> {
 
         val param = GetAllProductsRequestParam(
             name = name,
@@ -32,6 +36,8 @@ class ProductController(val productService: IProductService) {
             color = color,
             category = category,
             brand = brand,
+            page = page,
+            pageSize = pageSize
         )
 
         val response = productService.findAll(param)
