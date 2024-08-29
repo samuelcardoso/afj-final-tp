@@ -10,7 +10,6 @@ import java.time.LocalDate
 @RestControllerAdvice
 class ProductsExceptionHandler: ResponseEntityExceptionHandler() {
 
-
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(e: IllegalArgumentException): ProblemDetail {
         val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.PRECONDITION_FAILED, e.localizedMessage)

@@ -32,19 +32,5 @@ data class ProductEntity(
         category= product.category.description,
         brand=product.brand
     )
-
-    fun toDomain() =  Product(
-        id = this.id,
-        name = this.name,
-        price = this.price,
-        image=this.image,
-        description= this.description,
-        weight=this.weight,
-        measure=this.measure,
-        color=this.color,
-        category= Category.fromValue(this.category),
-        brand=this.brand,
-        dataRegister = this.dataRegister
-    )
 }
 
