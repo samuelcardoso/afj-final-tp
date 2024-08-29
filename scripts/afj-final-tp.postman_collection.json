@@ -77,10 +77,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{host}}/users/me",
+					"raw": "http://localhost:8083/users/me",
+					"protocol": "http",
 					"host": [
-						"{{host}}"
+						"localhost"
 					],
+					"port": "8083",
 					"path": [
 						"users",
 						"me"
@@ -199,6 +201,13 @@
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -212,13 +221,15 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"username\": \"usuario\",\n  \"password\": \"supersenha\"\n}"
+					"raw": "{\n  \"username\": \"usuario123\",\n  \"password\": \"supersenha_123\"\n}"
 				},
 				"url": {
-					"raw": "{{host}}/users/login",
+					"raw": "http://localhost:8083/users/login",
+					"protocol": "http",
 					"host": [
-						"{{host}}"
+						"localhost"
 					],
+					"port": "8083",
 					"path": [
 						"users",
 						"login"
@@ -327,13 +338,15 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"usuario\",\n    \"password\": \"supersenha\"\n}"
+					"raw": "{\n    \"username\": \"usuario2\",\n    \"password\": \"supersenha_123\"\n}"
 				},
 				"url": {
-					"raw": "{{host}}/users/register",
+					"raw": "http://localhost:8083/users/register",
+					"protocol": "http",
 					"host": [
-						"{{host}}"
+						"localhost"
 					],
+					"port": "8083",
 					"path": [
 						"users",
 						"register"
@@ -501,6 +514,12 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
 		}
 	]
 }
