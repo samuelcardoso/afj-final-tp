@@ -1,9 +1,7 @@
 package puc.products.domain
 
 import org.slf4j.LoggerFactory
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -67,7 +65,7 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         return ((totalElements / pageSize) + if (totalElements % pageSize > 0) 1 else 0).toInt()
     }
 
-    fun validatePage(page: Int, totalPages: Int) {
+    private fun validatePage(page: Int, totalPages: Int) {
         if (page < 0) {
             throw ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "Page number cannot be less than 1."
