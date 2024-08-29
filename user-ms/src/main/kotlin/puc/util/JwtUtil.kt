@@ -1,32 +1,52 @@
 package puc.util
 
-import io.jsonwebtoken.JwtException
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.security.Keys
+import java.util.Date
+import javax.crypto.SecretKey
 import org.springframework.stereotype.Component
-import puc.user.SessionToken
-import java.util.*
 
 @Component
 class JwtUtil {
-    private var key = Jwts.SIG.HS256.key().build()
-    private val expiration = 86400000 // 1 day
 
-    fun generateToken(sessionToken: SessionToken): String {
+    private val secret = "a_secure_random_string_for_signing_purposes_with_at_least_256_bits"
+    private val key: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
+
+    private val ROLES_KEY = "roles"
+
+    fun generateToken(username: String, roles: Set<String>): String {
+        val now = Date()
+        val expiryDate = Date(now.time + 1000 * 60 * 60 * 10) // 10 hours validity
+
         return Jwts.builder()
-            .subject(sessionToken.username)
-            .expiration(Date(System.currentTimeMillis() + expiration))
+            .subject(username)
+            .claim(ROLES_KEY, roles)
+            .issuedAt(now)
+            .expiration(expiryDate)
             .signWith(key)
             .compact()
     }
 
     fun validateToken(token: String): Boolean {
-        try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
-            return true
-        } catch (e: JwtException) {
-            //don't trust the JWT!
+        return try {
+            val claims = getClaimsFromToken(token)
+            !claims.expiration.before(Date())
+        } catch (e: Exception) {
+            false
         }
+    }
 
-        return false
+    fun getClaimsFromToken(token: String): Claims {
+        return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .payload
+    }
+
+    fun getExpirationTime(token: String): Long {
+        val claims = getClaimsFromToken(token)
+        return claims.expiration.time
     }
 }
