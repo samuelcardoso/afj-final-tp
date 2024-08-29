@@ -1,11 +1,13 @@
-package puc.products.`in`
+package puc.application.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import puc.products.domain.GetAllProductsRequestParam
-import puc.products.domain.IProductService
-import puc.products.domain.Product
+import puc.application.dtos.ProductDTO
+import puc.domain.products.services.IProductService
+import puc.domain.products.model.Product
+import puc.domain.products.services.GetAllProductsRequestParam
+import puc.domain.mappers.ProductMapper
 
 @RestController
 @RequestMapping("/products")
@@ -40,17 +42,18 @@ class ProductController(val productService: IProductService) {
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): Product? = productService.findById(id)
-
+    fun getById(@PathVariable id: String): Product? {
+        return productService.findById(id)
+    }
 
     @PostMapping
-    fun postProduct(
-        @RequestBody incomingProduct: IncomingProduct,
-        uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
-        val product = incomingProduct.toDomain()
+    fun postProduct(@RequestBody productDTO: ProductDTO,
+                    uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
+        val result =  productService.save(ProductMapper.dtoToDomain(productDTO))
+        val location = uriComponentsBuilder
+            .path("/products/{id}")
+            .buildAndExpand(result.id).toUri()
 
-        val result =  productService.save(product)
-        val location = uriComponentsBuilder.path("/products/{id}").buildAndExpand(result.id).toUri()
         return ResponseEntity.created(location).build()
     }
 

@@ -1,4 +1,4 @@
-package puc.products.domain
+package puc.domain.products.services
 
 data class GetAllProductsRequestParam(
     val name:String?,
