@@ -4,11 +4,7 @@ import jakarta.validation.Valid
 import java.net.URI
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import puc.model.dto.request.LoginRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.LoginResponse
@@ -43,9 +39,9 @@ class UserAppController(val userService: UserAppService) {
     }
 
     @PostMapping("/refresh-token")
-    fun refreshToken(): ResponseEntity<RefreshTokenResponse> {
-        val auth = SecurityContextHolder.getContext().authentication
-        val refreshTokenResponse = userService.refreshToken(auth.name)
+    fun refreshToken(@RequestHeader("Authorization")  authorizationHeader: String): ResponseEntity<RefreshTokenResponse> {
+        val refreshToken = authorizationHeader.substring(7)
+        val refreshTokenResponse = userService.refreshToken(refreshToken)
         return ResponseEntity.ok(refreshTokenResponse)
     }
 }

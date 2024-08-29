@@ -22,7 +22,7 @@ class UserAppServiceImpl (
 ): UserAppService {
     private var DEFAULT_ROLE = "ROLE_USER"
 
-    private val BEARER = "Bearer "
+    private val BEARER = "Bearer"
 
     private val MESSAGE_ERRO_USER_NOT_FOUND = "User not found"
     private val MESSAGE_ERRO_INVALID_CREDENTIALS = "Invalid credentials"
@@ -48,7 +48,7 @@ class UserAppServiceImpl (
             throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
 
         val token = jwtUtil.generateToken(user.username, user.roles)
-        val refreshToken = jwtUtil.generateRefreshToken(user.username)
+        val refreshToken = jwtUtil.generateRefreshToken(user.username, user.roles)
         val expiresIn = jwtUtil.getExpirationTime(token)
         val userDTO = UserMapperUtil.toUserDTO(user)
 
@@ -63,7 +63,7 @@ class UserAppServiceImpl (
     private fun findUserByUsername(username: String) = userRepository.findByUsername(username)
 
     override fun refreshToken(refreshToken: String): RefreshTokenResponse {
-        if (!jwtUtil.validateToken(refreshToken)) {
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
             throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
         }
 
