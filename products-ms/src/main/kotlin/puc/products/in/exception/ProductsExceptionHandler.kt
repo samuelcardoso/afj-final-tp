@@ -20,12 +20,4 @@ class ProductsExceptionHandler: ResponseEntityExceptionHandler() {
         problemDetail.setProperty("timestamp", LocalDate.now())
         return problemDetail
     }
-
-    fun handleResponseStatusException(e: ResponseStatusException): ProblemDetail {
-        val problemDetail = ProblemDetail.forStatusAndDetail(e.statusCode, e.reason ?: "An error occurred")
-        problemDetail.title = "Error"
-        problemDetail.detail = e.message
-        problemDetail.setProperty("timestamp", LocalDate.now())
-        return problemDetail
-    }
 }
