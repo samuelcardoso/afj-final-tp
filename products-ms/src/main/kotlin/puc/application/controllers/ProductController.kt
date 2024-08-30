@@ -1,13 +1,19 @@
 package puc.application.controllers
 
+import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 import puc.application.dtos.ProductDTO
-import puc.domain.products.services.IProductService
+import puc.domain.mappers.ProductMapper
 import puc.domain.products.model.Product
 import puc.domain.products.services.GetAllProductsRequestParam
-import puc.domain.mappers.ProductMapper
+import puc.domain.products.services.IProductService
+import puc.domain.users.model.User
+
 
 @RestController
 @RequestMapping("/products")
@@ -47,9 +53,11 @@ class ProductController(val productService: IProductService) {
     }
 
     @PostMapping
+    @RolesAllowed("USER")
     fun postProduct(@RequestBody productDTO: ProductDTO,
+                    @AuthenticationPrincipal user: User,
                     uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
-        val result =  productService.save(ProductMapper.dtoToDomain(productDTO))
+        val result =  productService.save(ProductMapper.dtoToDomain(productDTO), user)
         val location = uriComponentsBuilder
             .path("/products/{id}")
             .buildAndExpand(result.id).toUri()

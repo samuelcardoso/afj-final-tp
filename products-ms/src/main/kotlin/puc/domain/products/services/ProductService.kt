@@ -8,6 +8,7 @@ import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
 import puc.domain.mappers.ProductMapper
+import puc.domain.users.model.User
 import puc.domain.users.services.UserService
 import kotlin.jvm.optionals.getOrNull
 
@@ -29,10 +30,11 @@ class ProductService(val productRepository: ProductRepository, val userService: 
         return if (result != null) ProductMapper.entityToDomain(result) else null;
     }
 
-    override fun save(product: Product): Product {
-        val user = userService.findById(product.userId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found.");
+    override fun save(product: Product, user: User?): Product {
+        user ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found.");
+        product.userId = user.id
         product.username = user.username
-
+        
         logger.info("Saving product with name ${product.name}")
 
         val result = productRepository.save(ProductEntity(product))

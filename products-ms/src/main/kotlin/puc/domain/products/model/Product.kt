@@ -15,7 +15,7 @@ data class Product(
     val category: Category,
     val brand:String,
     val dataRegister: LocalDateTime? = null,
-    val userId: Long,
+    var userId: Long,
     var username: String? = null
 ){
     init {
