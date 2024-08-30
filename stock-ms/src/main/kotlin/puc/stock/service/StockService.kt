@@ -10,4 +10,6 @@ interface StockService {
     fun addProductStock(stockUpdateRequest: StockUpdateRequest) : StockResponse
 
     fun findStockByProductId(productId: String) : StockResponse
+
+    fun findStockAll() : List<StockResponse>
 }
