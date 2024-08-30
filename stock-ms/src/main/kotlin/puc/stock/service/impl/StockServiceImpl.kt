@@ -65,6 +65,15 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
         return stock.toResponse()
     }
 
+    @Transactional
+    override fun findStockAll() : List<StockResponse> {
+        val stock = stockRepository.findAll()
+            ?: throw ProductNotFoundException(String.format("Erro ao buscar todos os produtos do estoque"))
+
+        logger.info("=== Produtos encontrados no estoque", stock)
+        return stock.map { it.toResponse() }
+    }
+
     private fun validateStockExistence(existingStock: Stock?, stockUpdateRequest: StockUpdateRequest) {
         if (nonNull(existingStock)) {
             logger.error("=== Erro, o produto [{}] já existe no estoque", stockUpdateRequest.productId)

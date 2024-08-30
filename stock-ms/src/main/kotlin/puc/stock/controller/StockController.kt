@@ -42,4 +42,12 @@ class StockController(val stockService: StockService) {
         logger.info("=== Buscando estoque do produto [{}]", productId)
         return ResponseEntity.ok(stockService.findStockByProductId(productId))
     }
+
+    @GetMapping("/product")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Busca todos produtos do estoque")
+    fun getStockAll() : ResponseEntity<List<StockResponse>> {
+        logger.info("=== Buscando estoque de todos os produtos")
+        return ResponseEntity.ok(stockService.findStockAll())
+    }
 }
