@@ -26,6 +26,7 @@ class UserAppServiceImpl (
 
     private val MESSAGE_ERRO_USER_NOT_FOUND = "User not found"
     private val MESSAGE_ERRO_INVALID_CREDENTIALS = "Invalid credentials"
+    private val MESSAGE_ERRO_INVALID_REFRESH_TOKEN = "Invalid refresh token"
     private val MESSAGE_ERRO_USER_ALREADY_EXISTS = "User already exists with the username %s"
 
     private val passwordEncoder = BCryptPasswordEncoder()
@@ -52,7 +53,13 @@ class UserAppServiceImpl (
         val expiresIn = jwtUtil.getExpirationTime(token)
         val userDTO = UserMapperUtil.toUserDTO(user)
 
-        return LoginResponse(token, BEARER, expiresIn, userDTO, refreshToken)
+        return LoginResponse(
+            userDTO,
+            token,
+            BEARER,
+            expiresIn,
+            refreshToken
+        )
     }
 
     override fun getUserInfo(username: String): UserResponse {
@@ -64,7 +71,7 @@ class UserAppServiceImpl (
 
     override fun refreshToken(refreshToken: String): RefreshTokenResponse {
         if (!jwtUtil.validateRefreshToken(refreshToken)) {
-            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
+            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_REFRESH_TOKEN)
         }
 
         val username = jwtUtil.getUsernameFromToken(refreshToken)
@@ -73,6 +80,11 @@ class UserAppServiceImpl (
         val newToken = jwtUtil.generateToken(user.username, user.roles)
         val expiresIn = jwtUtil.getExpirationTime(newToken)
 
-        return RefreshTokenResponse(newToken, BEARER, expiresIn, refreshToken)
+        return RefreshTokenResponse(
+            newToken,
+            BEARER,
+            expiresIn,
+            refreshToken
+        )
     }
 }

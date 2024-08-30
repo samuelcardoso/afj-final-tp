@@ -1,9 +1,9 @@
 package puc.model.dto.response
 
 data class LoginResponse(
-    val token: String,
-    val typeOfToken: String,
-    val expiresIn: Long,
     val user: UserResponse,
-    val refreshToken: String
-)
+    override val token: String,
+    override val tokenType: String,
+    override val tokenExpiresIn: Long,
+    override val refreshToken: String
+) : AbstractAuthResponse()

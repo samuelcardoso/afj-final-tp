@@ -81,4 +81,20 @@ class ExceptionHandler {
 
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
+
+
+    @ExceptionHandler(Exception::class)
+    fun handleException(
+        ex: Exception,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            timestamp = LocalDateTime.now(),
+            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            error = HttpStatus.INTERNAL_SERVER_ERROR.reasonPhrase,
+            message = ex.message,
+            path = request.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }
