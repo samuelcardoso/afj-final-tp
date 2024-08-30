@@ -7,8 +7,6 @@ services:
     restart: unless-stopped
     expose:
       - 6379
-    networks:
-      - cache
 
   prometheus-products-ms:
     image: prom/prometheus:latest
@@ -17,12 +15,8 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
       - 9090:9090
     user: root
@@ -35,8 +29,6 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
-    networks:
-      - monit
     depends_on:
       - prometheus-products-ms
     user: root
