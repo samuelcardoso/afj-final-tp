@@ -32,18 +32,5 @@ data class ProductEntity(
         category= product.category.description,
         brand=product.brand
     )
-
-    fun update(product: Product)
-    {
-        name = product.name
-        price = product.price
-        image=product.image
-        description= product.description
-        weight=product.weight
-        measure=product.measure
-        color=product.color
-        category= product.category.description
-        brand=product.brand
-    }
 }
 

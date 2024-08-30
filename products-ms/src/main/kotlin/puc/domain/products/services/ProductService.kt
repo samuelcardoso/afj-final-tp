@@ -43,13 +43,13 @@ class ProductService(val productRepository: ProductRepository) : IProductService
 
         logger.info("Updating product with id ${id}")
 
-        productDb.update(product)
+        ProductMapper.domainToEntity(product, productDb)
 
-        val result = productRepository.save(productDb)
+        productRepository.save(productDb)
 
-        logger.info("The product ${result.id} was successfully updated")
+        logger.info("The product ${productDb.id} was successfully updated")
 
-        return ProductMapper.entityToDomain(result)
+        return ProductMapper.entityToDomain(productDb)
     }
 
     override fun delete(productId: String) {
