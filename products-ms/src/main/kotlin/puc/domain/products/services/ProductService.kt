@@ -1,15 +1,18 @@
 package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
 import puc.domain.mappers.ProductMapper
+import puc.domain.users.services.UserService
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class ProductService(val productRepository: ProductRepository) : IProductService {
+class ProductService(val productRepository: ProductRepository, val userService: UserService) : IProductService {
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
     override fun findAll(requestParam: GetAllProductsRequestParam?): List<Product> {
@@ -27,6 +30,9 @@ class ProductService(val productRepository: ProductRepository) : IProductService
     }
 
     override fun save(product: Product): Product {
+        val user = userService.findById(product.userId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found.");
+        product.username = user.username
+
         logger.info("Saving product with name ${product.name}")
 
         val result = productRepository.save(ProductEntity(product))

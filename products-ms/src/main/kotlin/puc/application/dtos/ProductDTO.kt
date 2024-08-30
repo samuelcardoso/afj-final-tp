@@ -11,7 +11,8 @@ data class ProductDTO(
     val measure:String,
     val color:String,
     val category: Category,
-    val brand:String
+    val brand:String,
+    val userId: Long
 )
 
 

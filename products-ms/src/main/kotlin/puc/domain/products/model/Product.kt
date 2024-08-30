@@ -14,7 +14,9 @@ data class Product(
     val color:String,
     val category: Category,
     val brand:String,
-    val dataRegister: LocalDateTime? = null
+    val dataRegister: LocalDateTime? = null,
+    val userId: Long,
+    var username: String? = null
 ){
     init {
         require(name.isNotBlank()) { "Name must not be blank" }
@@ -25,7 +27,8 @@ data class Product(
         require(!weight.isNaN()) { "Weight must be a nan" }
         require(measure.isNotBlank()) { "Measure must not be blank" }
         require(color.isNotBlank()) { "Color must not be blank" }
-        require(category != Category.UNKNOWN) { "Category must not be blank" }
+        // require(category != Category.UNKNOWN) { "Category must not be blank" }
         require(brand.isNotBlank()) { "Brand must not be blank" }
+        require(userId > 0) { "User id must be informed " }
     }
 }
