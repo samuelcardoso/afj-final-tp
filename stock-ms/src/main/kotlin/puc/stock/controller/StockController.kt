@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import puc.stock.controller.request.StockUpdateRequest
-import puc.stock.controller.response.StockUpdateResponse
+import puc.stock.controller.response.StockResponse
 import puc.stock.service.StockService
 
 @Validated
@@ -22,7 +22,7 @@ class StockController(val stockService: StockService) {
     @PatchMapping("/write-down")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Da baixa no estoque de uma determinada quantidade de produtos")
-    fun writeDown(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
+    fun writeDown(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockResponse> {
         logger.info("=== Atualizando estoque do produto [{}] com [{}] item(s)", stockUpdateRequest.productId, (stockUpdateRequest.quantity!! * -1))
         return ResponseEntity.ok(stockService.writeDownStock(stockUpdateRequest));
     }
@@ -30,8 +30,16 @@ class StockController(val stockService: StockService) {
     @PostMapping("/add-product")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Adiciona um novo produto ao estoque")
-    fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockUpdateResponse> {
+    fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockResponse> {
         logger.info("=== Adicionando produto [{}] ao estoque", stockUpdateRequest.productId)
         return ResponseEntity.ok(stockService.addProductStock(stockUpdateRequest))
+    }
+
+    @GetMapping("/product/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Verifica se um produto existe no estoque")
+    fun getStockById(@PathVariable(name = "productId") productId : String) : ResponseEntity<StockResponse> {
+        logger.info("=== Buscando estoque do produto [{}]", productId)
+        return ResponseEntity.ok(stockService.findStockByProductId(productId))
     }
 }

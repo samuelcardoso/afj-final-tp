@@ -2,8 +2,11 @@ package puc.stock.service.impl
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -27,9 +30,10 @@ class StockServiceImplTest {
         // Given
         val request = StockUpdateRequest("1", 1)
         val stock = Stock(1, "1", 1)
+        val stockSlot = slot<Stock>()
 
         every { stockRepository.findByProductId(request.productId!!) } returns stock
-        every { stockRepository.save(stock) } returns stock
+        every { stockRepository.save(capture(stockSlot)) } answers { stockSlot.captured }
 
         // When
         val actualStock = stockService.writeDownStock(request)
@@ -38,23 +42,7 @@ class StockServiceImplTest {
         assertNotNull(actualStock)
         assertEquals(0, actualStock.quantity)
         verify { stockRepository.findByProductId(request.productId!!) }
-        verify { stockRepository.save(stock) }
-    }
-
-    @Test
-    fun `should fail write down stock if product not found`() {
-        // Given
-        val request = StockUpdateRequest("1", 1)
-
-        every { stockRepository.findByProductId(request.productId!!) } returns null
-
-        // Then
-        val exception = assertThrows(ProductNotFoundException::class.java) {
-            stockService.writeDownStock(request)
-        }
-
-        assertEquals("Produto com id [1] não encontrado na base de estoques", exception.message)
-        verify { stockRepository.findByProductId(request.productId!!) }
+        verify { stockRepository.save(stockSlot.captured) }
     }
 
     @Test
@@ -112,5 +100,30 @@ class StockServiceImplTest {
         assertEquals("Estoque do produto com id [2] já está cadastrado", exception.message)
         verify { productService.findProductById(productId) }
         verify { stockRepository.findByProductId(productId) }
+    }
+
+    @Test
+    fun `should found stock by product id with success`() {
+        val stock = Stock(1, "1", 1)
+        every { stockRepository.findByProductId("1") } returns stock
+
+        // Then
+        val result = stockService.findStockByProductId("1")
+
+        assertNotNull(result)
+        verify { stockRepository.findByProductId("1") }
+    }
+
+    @Test
+    fun `should fail whe getting stock by product id`() {
+        every { stockRepository.findByProductId("1") } returns null
+
+        // Then
+        val exception = assertThrows(ProductNotFoundException::class.java) {
+            stockService.findStockByProductId("1")
+        }
+
+        assertEquals("Produto com id [1] não encontrado na base de estoques", exception.message)
+        verify { stockRepository.findByProductId("1") }
     }
 }

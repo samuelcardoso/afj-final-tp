@@ -3,15 +3,15 @@ package puc.stock.service.impl
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import puc.stock.controller.response.StockUpdateResponse
 import puc.stock.controller.request.StockUpdateRequest
+import puc.stock.controller.response.StockResponse
 import puc.stock.exception.NotEnoughStockException
 import puc.stock.exception.ProductAlreadyExistsException
 import puc.stock.exception.ProductNotFoundException
-import puc.stock.repository.StockRepository
-import puc.stock.service.StockService
 import puc.stock.model.Stock
+import puc.stock.repository.StockRepository
 import puc.stock.service.ProductService
+import puc.stock.service.StockService
 import java.util.Objects.nonNull
 
 @Service
@@ -20,9 +20,8 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
-    override fun writeDownStock(stockUpdateRequest: StockUpdateRequest) : StockUpdateResponse {
-        val stock = stockRepository.findByProductId(stockUpdateRequest.productId!!)
-            ?: throw ProductNotFoundException(String.format("Produto com id [%s] não encontrado na base de estoques", stockUpdateRequest.productId))
+    override fun writeDownStock(stockUpdateRequest: StockUpdateRequest) : StockResponse {
+        val stock = this.findStockByProductId(stockUpdateRequest.productId!!).toEntity()
 
         if (stock.quantity < stockUpdateRequest.quantity!!) {
             logger.error("=== Erro, produto [{}] com estoque insuficiente", stockUpdateRequest.productId)
@@ -35,11 +34,11 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
         val stockUpdated = stockRepository.save(stock)
 
         logger.info("=== Estoque atualizado com sucesso, quantidade atual [{}]", stockUpdated.quantity)
-        return StockUpdateResponse(stockUpdated.id!!, stockUpdated.productId, stockUpdated.quantity)
+        return stockUpdated.toResponse()
     }
 
     @Transactional
-    override fun addProductStock(stockUpdateRequest: StockUpdateRequest) : StockUpdateResponse {
+    override fun addProductStock(stockUpdateRequest: StockUpdateRequest) : StockResponse {
         val product = productService.findProductById(stockUpdateRequest.productId!!)
         val existingStock = stockRepository.findByProductId(product.id)
 
@@ -51,10 +50,19 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
         )
 
         logger.info("=== Salvando estoque [{}]", stock.toString())
-        val stockSave = stockRepository.save(stock)
+        val stockSaved = stockRepository.save(stock)
 
-        logger.info("=== Estoque [{}] salvo", stockSave.toString())
-        return StockUpdateResponse(stockSave.id!!, stockSave.productId, stockSave.quantity)
+        logger.info("=== Estoque [{}] salvo", stockSaved.toString())
+        return stockSaved.toResponse()
+    }
+
+    @Transactional
+    override fun findStockByProductId(productId: String) : StockResponse {
+        val stock = stockRepository.findByProductId(productId)
+            ?: throw ProductNotFoundException(String.format("Produto com id [%s] não encontrado na base de estoques", productId))
+
+        logger.info("=== Produto [{}] encontrado no estoque", stock)
+        return stock.toResponse()
     }
 
     private fun validateStockExistence(existingStock: Stock?, stockUpdateRequest: StockUpdateRequest) {

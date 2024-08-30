@@ -47,7 +47,7 @@ class ProductServiceImplTest {
             productService.findProductById(productId)
         }
 
-        assertEquals("Product not found with id: $productId", exception.message)
+        assertEquals("Produto com id [$productId] não encontrado!", exception.message)
         verify { client.getProductById(productId) }
     }
 }
