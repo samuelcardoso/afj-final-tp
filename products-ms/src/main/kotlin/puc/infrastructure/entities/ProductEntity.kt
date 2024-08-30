@@ -10,15 +10,15 @@ import java.time.LocalDateTime
 data class ProductEntity(
     @Id
     val id: String? = null,
-    val name: String,
-    val price: Double,
-    val image:String,
-    val description: String,
-    val weight:Double,
-    val measure:String,
-    val color:String,
-    val category: String,
-    val brand:String,
+    var name: String,
+    var price: Double,
+    var image:String,
+    var description: String,
+    var weight:Double,
+    var measure:String,
+    var color:String,
+    var category: String,
+    var brand:String,
     val dataRegister: LocalDateTime = LocalDateTime.now()
 ){
     constructor(product: Product): this(
@@ -32,5 +32,18 @@ data class ProductEntity(
         category= product.category.description,
         brand=product.brand
     )
+
+    fun update(product: Product)
+    {
+        name = product.name
+        price = product.price
+        image=product.image
+        description= product.description
+        weight=product.weight
+        measure=product.measure
+        color=product.color
+        category= product.category.description
+        brand=product.brand
+    }
 }
 
