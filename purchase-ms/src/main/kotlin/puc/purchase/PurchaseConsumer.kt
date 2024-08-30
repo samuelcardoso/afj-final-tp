@@ -6,7 +6,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
 @Component
-class PurchaseConsumer(val restTemplate: RestTemplate) {
+class PurchaseConsumer(
+    val restTemplate: RestTemplate,
+    private val purchaseService: PurchaseService,
+    service: PurchaseService
+) {
 
     @RabbitListener(queues = ["\${rabbitmq.queue}"])
     fun receivePurchaseMessage(purchaseMessageStr: String) {
@@ -18,13 +22,14 @@ class PurchaseConsumer(val restTemplate: RestTemplate) {
             val purchaseMessage: PurchaseMessage = objectMapper.readValue(purchaseMessageStr, PurchaseMessage::class.java)
 
             // Chama o serviço stock-ms para decrementar o estoque
-            restTemplate.postForObject(
+           /* restTemplate.postForObject(
                 "http://localhost:8082/write-down",
                 StockRequest(purchaseMessage.productId, purchaseMessage.quantity),
                 Void::class.java
-            )
+            )*/
 
             // Lógica para salvar a compra no banco de dados pode ser adicionada aqui
+            purchaseService.save()
             println("Baixa no estoque realizada para o produto: ${purchaseMessage.productId}")
 
         } catch (e: Exception) {
