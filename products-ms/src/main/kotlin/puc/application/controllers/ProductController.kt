@@ -3,10 +3,12 @@ package puc.products.`in`
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import puc.products.domain.FilterProductParams
-import puc.products.domain.IProductService
-import puc.products.domain.PaginatedResponse
-import puc.products.domain.Product
+import puc.application.dtos.ProductDTO
+import puc.domain.products.services.IProductService
+import puc.domain.products.model.Product
+import puc.domain.mappers.ProductMapper
+import puc.application.dtos.FilterProductParamsDTO
+import puc.application.dtos.PaginatedResponseDTO
 
 @RestController
 @RequestMapping("/products")
@@ -19,9 +21,9 @@ class ProductController(val productService: IProductService) {
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) pageSize: Int?,
 
-        ): ResponseEntity<PaginatedResponse<Product>> {
+        ): ResponseEntity<PaginatedResponseDTO<Product>> {
 
-        val param = FilterProductParams(
+        val param = FilterProductParamsDTO(
             name = name,
             category = category,
             page = page,
@@ -34,17 +36,18 @@ class ProductController(val productService: IProductService) {
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): Product? = productService.findById(id)
-
+    fun getById(@PathVariable id: String): Product? {
+        return productService.findById(id)
+    }
 
     @PostMapping
-    fun postProduct(
-        @RequestBody incomingProduct: IncomingProduct,
-        uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
-        val product = incomingProduct.toDomain()
+    fun postProduct(@RequestBody productDTO: ProductDTO,
+                    uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
+        val result =  productService.save(ProductMapper.dtoToDomain(productDTO))
+        val location = uriComponentsBuilder
+            .path("/products/{id}")
+            .buildAndExpand(result.id).toUri()
 
-        val result =  productService.save(product)
-        val location = uriComponentsBuilder.path("/products/{id}").buildAndExpand(result.id).toUri()
         return ResponseEntity.created(location).build()
     }
 

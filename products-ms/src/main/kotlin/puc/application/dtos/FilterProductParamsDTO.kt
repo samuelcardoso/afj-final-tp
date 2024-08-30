@@ -1,6 +1,6 @@
-package puc.products.domain
+package puc.application.dtos
 
-data class FilterProductParams(
+data class FilterProductParamsDTO(
     val name:String?,
     val category:String?,
     val page:Int,
@@ -18,6 +18,8 @@ data class FilterProductParams(
 
     fun validate(totalPages: Int) {
                 require(page >= 1) { "Page number cannot be less than 1." }
+
+                if (totalPages  == 0) return
                 require(page  <= totalPages) { "Requested page does not exist. Last available page: $totalPages" }
     }
 }

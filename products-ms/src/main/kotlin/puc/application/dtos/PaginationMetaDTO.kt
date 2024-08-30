@@ -1,6 +1,6 @@
-package puc.products.domain
+package puc.application.dtos
 
-data class PaginationMeta (
+data class PaginationMetaDTO (
     val total: Long,
     val perPage: Int,
     val currentPage: Int,

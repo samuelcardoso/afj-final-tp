@@ -1,8 +1,10 @@
-package puc.products.external.database
+package puc.infrastructure.entities
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import puc.products.domain.Product
+import puc.domain.enums.Category
+import puc.domain.products.model.Product
+import java.time.LocalDateTime
 
 @Document(collection = "Product")
 data class ProductEntity(
@@ -17,6 +19,7 @@ data class ProductEntity(
     val color:String,
     val category: String,
     val brand:String,
+    val dataRegister: LocalDateTime = LocalDateTime.now()
 ){
     constructor(product: Product): this(
         name = product.name,
@@ -26,21 +29,8 @@ data class ProductEntity(
         weight=product.weight,
         measure=product.measure,
         color=product.color,
-        category= product.category,
-        brand=product.brand,
-    )
-
-    fun toDomain() =  Product(
-        id = this.id,
-        name = this.name,
-        price = this.price,
-        image=this.image,
-        description= this.description,
-        weight=this.weight,
-        measure=this.measure,
-        color=this.color,
-        category= this.category,
-        brand=this.brand,
+        category= product.category.description,
+        brand=product.brand
     )
 }
 
