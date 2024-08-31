@@ -17,9 +17,9 @@ class UserMsRestTemplate(val restTemplateConfig: RestTemplateConfig) {
     @Value("\${base-user-ms.router}")
     lateinit var BASE_ROUTE: String
 
-    fun createHttpEntity(token: String): HttpEntity<String> {
+    fun createHttpEntity(token: String?): HttpEntity<String> {
         val headers = HttpHeaders().apply {
-            set("Authorization", token)
+            token?.let { set("Authorization", it) }
         }
         return HttpEntity(headers)
     }
