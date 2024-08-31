@@ -5,9 +5,7 @@ import java.net.URI
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import puc.model.dto.request.LoginRequest
-import puc.model.dto.request.RefreshTokenRequest
-import puc.model.dto.request.RegisterRequest
+import puc.model.dto.request.*
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
@@ -48,5 +46,28 @@ class UserAppController(val userService: UserAppService) {
         val refreshToken = request.refreshToken
         val refreshTokenResponse = userService.refreshToken(refreshToken)
         return ResponseEntity.ok(refreshTokenResponse)
+    }
+
+
+    @PutMapping("/{id}")
+    fun updateUser(
+        @PathVariable id: Long,
+        @Valid
+        @RequestBody(required = true)
+        request: UpdateUserRequest
+    ): ResponseEntity<UserResponse> {
+        val userResponse = userService.updateUser(id, request)
+        return ResponseEntity.ok(userResponse)
+    }
+
+    @PatchMapping("/change-password")
+    fun changePassword(
+        @Valid
+        @RequestBody(required = true)
+        request: ChangePasswordRequest
+    ): ResponseEntity<UserResponse> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val userResponse = userService.changePassword(auth.name, request)
+        return ResponseEntity.ok(userResponse)
     }
 }

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service
 import puc.exception.custom.InvalidCredentialsException
 import puc.exception.custom.UserNotFoundException
 import puc.exception.custom.UsernameAlreadyExistsException
+import puc.model.dto.request.ChangePasswordRequest
 import puc.model.dto.request.RegisterRequest
+import puc.model.dto.request.UpdateUserRequest
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
@@ -26,6 +28,7 @@ class UserAppServiceImpl (
 
     private val MESSAGE_ERRO_USER_NOT_FOUND = "User not found"
     private val MESSAGE_ERRO_INVALID_CREDENTIALS = "Invalid credentials"
+    private val MESSAGE_ERRO_INVALID_OLD_PASSWORD = "Invalid old password"
     private val MESSAGE_ERRO_INVALID_REFRESH_TOKEN = "Invalid refresh token"
     private val MESSAGE_ERRO_USER_ALREADY_EXISTS = "User already exists with the username %s"
 
@@ -86,5 +89,23 @@ class UserAppServiceImpl (
             expiresIn,
             refreshToken
         )
+    }
+
+    override fun updateUser(id: Long, request: UpdateUserRequest): UserResponse {
+        val user = userRepository.findById(id).orElseThrow { UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND) }
+        user.roles = request.roles.toMutableSet()
+        userRepository.save(user)
+        return UserMapperUtil.toUserDTO(user)
+    }
+
+    override fun changePassword(username: String, request: ChangePasswordRequest): UserResponse {
+        val user = userRepository.findByUsername(username) ?: throw UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND)
+        if (!passwordEncoder.matches(request.oldPassword, user.password)) {
+            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_OLD_PASSWORD)
+        }
+        val encodedPassword = passwordEncoder.encode(request.newPassword)
+        user.password = encodedPassword
+        userRepository.save(user)
+        return UserMapperUtil.toUserDTO(user)
     }
 }
