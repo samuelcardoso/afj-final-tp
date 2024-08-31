@@ -1,15 +1,12 @@
 package puc.purchase
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import org.springframework.web.bind.annotation.*
-import org.springframework.amqp.rabbit.core.RabbitTemplate
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.ResponseEntity
-import puc.util.JwtUtil
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.amqp.AmqpException
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 import puc.model.PurchaseRequest
 import puc.service.PurchaseService
+import puc.util.JwtUtil
 
 @RestController
 @RequestMapping("/purchase")
