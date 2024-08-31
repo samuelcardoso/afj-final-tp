@@ -1,7 +1,11 @@
 package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import puc.application.dtos.FilterProductParamsDTO
+import puc.application.dtos.PaginatedResponseDTO
+import puc.application.dtos.PaginationMetaDTO
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
@@ -9,19 +13,34 @@ import puc.domain.mappers.ProductMapper
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class ProductService(val productRepository: ProductRepository) : IProductService {
+class ProductService(val productRepository: ProductRepository) : IProductService{
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    override fun findAll(requestParam: GetAllProductsRequestParam?): List<Product> {
-        val allProducts = productRepository.findAll()
 
-        val filterProducts = findAllFilters(requestParam,allProducts)
+    override fun findAll(filterParams: FilterProductParamsDTO): PaginatedResponseDTO<Product> {
+        val totalPages = getTotalPages(filterParams.pageSize)
 
-        return filterProducts.map { ProductMapper.entityToDomain(it)  }
+        filterParams.validate(totalPages)
+
+        val pageable = PageRequest.of(filterParams.page.minus(1), filterParams.pageSize)
+        val pagedProducts = productRepository.findAll(pageable)
+
+        val filteredProducts = findAllFilters(filterParams, pagedProducts.content)
+
+
+        return PaginatedResponseDTO(
+            data = filteredProducts.map { ProductMapper.entityToDomain(it)  },
+            meta = PaginationMetaDTO(
+                total = pagedProducts.totalElements,
+                perPage = filterParams.pageSize,
+                currentPage = filterParams.page,
+                lastPage = totalPages
+            )
+        )
     }
 
     override fun findById(id: String): Product? {
-        var result = productRepository.findById(id).getOrNull()
+        val result = productRepository.findById(id).getOrNull()
 
         return if (result != null) ProductMapper.entityToDomain(result) else null;
     }
@@ -44,16 +63,17 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         TODO("Not yet implemented")
     }
 
-    private fun findAllFilters(requestParam: GetAllProductsRequestParam?, allProducts: MutableList<ProductEntity>) : List<ProductEntity> =
+    private fun getTotalPages(pageSize: Int): Int {
+        val totalElements = productRepository.count()
+        return ((totalElements / pageSize) + if (totalElements % pageSize > 0) 1 else 0).toInt()
+    }
+
+
+
+    private fun findAllFilters(requestParam: FilterProductParamsDTO?, allProducts: MutableList<ProductEntity>) : List<ProductEntity> =
         allProducts.asSequence().filter { product ->
             requestParam?.name?.let { product.name.contains(it, ignoreCase = true) } ?: true &&
-                    requestParam?.price?.let { product.price == it } ?: true &&
-                    requestParam?.description?.let { product.description.contains(it, ignoreCase = true) } ?: true &&
-                    requestParam?.weight?.let { product.weight == it } ?: true &&
-                    requestParam?.measure?.let { product.measure.contains(it, ignoreCase = true) } ?: true &&
-                    requestParam?.color?.let { product.color.contains(it, ignoreCase = true) } ?: true &&
-                    requestParam?.category?.let { product.category.contains(it, ignoreCase = true) } ?: true &&
-                    requestParam?.brand?.let { product.brand.contains(it, ignoreCase = true) } ?: true
+                    requestParam?.category?.let { product.category.contains(it, ignoreCase = true) } ?: true
         }.toList()
 
 }
