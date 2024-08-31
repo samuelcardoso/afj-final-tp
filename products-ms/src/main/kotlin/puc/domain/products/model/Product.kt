@@ -1,5 +1,6 @@
 package puc.domain.products.model
 
+import org.springframework.hateoas.RepresentationModel
 import puc.domain.enums.Category
 import java.time.LocalDateTime
 
@@ -15,7 +16,7 @@ data class Product(
     val category: Category,
     val brand:String,
     val dataRegister: LocalDateTime? = null
-){
+) : RepresentationModel<Product>(){
     init {
         require(name.isNotBlank()) { "Name must not be blank" }
         require(!price.isNaN()) { "Price must be a nan" }
