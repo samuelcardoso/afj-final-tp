@@ -3,7 +3,12 @@ package puc.service.impl
 import java.util.Objects
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import puc.exception.custom.*
+import puc.exception.custom.UserDocumentAlreadyExistsException
+import puc.exception.custom.InvalidRoleException
+import puc.exception.custom.UserEmailAlreadyExistsException
+import puc.exception.custom.InvalidCredentialsException
+import puc.exception.custom.UserNotFoundException
+import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.ChangePasswordRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.request.UpdateUserRequest
