@@ -18,12 +18,14 @@ class PurchaseController(val rabbitTemplate: RabbitTemplate, val jwtUtil: JwtUti
     lateinit var routingKey: String
 
     @PostMapping("/buy")
-    fun buy(@RequestHeader("Authorization") token: String, @RequestBody purchaseRequest: PurchaseRequest): ResponseEntity<String> {
+    fun buy(@RequestHeader("Authorization") token: String, @RequestBody purchaseRequest: List<PurchaseRequest>): ResponseEntity<String> {
         val userId = jwtUtil.extractUserId(token.removePrefix("Bearer "))
-        val purchaseMessage = PurchaseMessage(userId, purchaseRequest.productId, purchaseRequest.quantity)
-        val objectMapper = ObjectMapper()
-        val messageAsString = objectMapper.writeValueAsString(purchaseMessage)
-        rabbitTemplate.convertAndSend(exchange, routingKey, messageAsString)
+        for (purchase in purchaseRequest) {
+            val purchaseMessage = PurchaseMessage(userId, purchase.productId, purchase.quantity)
+            val objectMapper = ObjectMapper()
+            val messageAsString = objectMapper.writeValueAsString(purchaseMessage)
+            rabbitTemplate.convertAndSend(exchange, routingKey, messageAsString)
+        }
         return ResponseEntity.ok("Purchase request sent.")
     }
 }

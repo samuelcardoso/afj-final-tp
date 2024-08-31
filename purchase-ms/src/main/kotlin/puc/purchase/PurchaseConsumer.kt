@@ -8,8 +8,7 @@ import org.springframework.web.client.RestTemplate
 @Component
 class PurchaseConsumer(
     val restTemplate: RestTemplate,
-    private val purchaseService: PurchaseService,
-    service: PurchaseService
+    private val purchaseService: PurchaseService
 ) {
 
     @RabbitListener(queues = ["\${rabbitmq.queue}"])
@@ -28,8 +27,7 @@ class PurchaseConsumer(
                 Void::class.java
             )*/
 
-            // Lógica para salvar a compra no banco de dados pode ser adicionada aqui
-            purchaseService.save()
+            purchaseService.save(Purchase(productId = purchaseMessage.productId, quantity = purchaseMessage.quantity))
             println("Baixa no estoque realizada para o produto: ${purchaseMessage.productId}")
 
         } catch (e: Exception) {
