@@ -7,12 +7,11 @@ import org.springframework.stereotype.Service
 import puc.application.dtos.FilterProductParamsDTO
 import puc.application.dtos.PaginatedResponseDTO
 import puc.application.dtos.PaginationMetaDTO
-import puc.application.dtos.ProductDTO
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
 import puc.domain.mappers.ProductMapper
-import puc.products.`in`.ProductController
+import puc.application.controllers.ProductController
 import kotlin.jvm.optionals.getOrNull
 
 @Service

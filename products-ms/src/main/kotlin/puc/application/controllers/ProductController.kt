@@ -1,4 +1,4 @@
-package puc.products.`in`
+package puc.application.controllers
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
