@@ -2,6 +2,7 @@ package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.PageRequest
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
 import puc.application.dtos.FilterProductParamsDTO
 import puc.application.dtos.PaginatedResponseDTO
@@ -10,6 +11,7 @@ import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
 import puc.domain.mappers.ProductMapper
+import puc.application.controllers.ProductController
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -28,8 +30,12 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         val filteredProducts = findAllFilters(filterParams, pagedProducts.content)
 
 
+        val resultProducts = filteredProducts.map { ProductMapper.entityToDomain(it) }
+
+        linkToProductController(resultProducts)
+
         return PaginatedResponseDTO(
-            data = filteredProducts.map { ProductMapper.entityToDomain(it)  },
+            data = resultProducts,
             meta = PaginationMetaDTO(
                 total = pagedProducts.totalElements,
                 perPage = filterParams.pageSize,
@@ -92,5 +98,11 @@ class ProductService(val productRepository: ProductRepository) : IProductService
                     requestParam?.category?.let { product.category.contains(it, ignoreCase = true) } ?: true
         }.toList()
 
+    private fun linkToProductController(products:List<Product>): Unit {
+        for (item in products) {
+            val withSelfRel = linkTo(ProductController::class.java).slash(item.id).withSelfRel()
+            item.add(withSelfRel)
+        }
+    }
 }
 
