@@ -3,15 +3,14 @@ package puc.service.impl
 import java.util.Objects
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import puc.exception.custom.InvalidCredentialsException
-import puc.exception.custom.UserNotFoundException
-import puc.exception.custom.UsernameAlreadyExistsException
+import puc.exception.custom.*
 import puc.model.dto.request.ChangePasswordRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.request.UpdateUserRequest
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
+import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
 import puc.service.UserAppService
 import puc.util.JwtUtil
@@ -31,6 +30,8 @@ class UserAppServiceImpl (
     private val MESSAGE_ERRO_INVALID_OLD_PASSWORD = "Invalid old password"
     private val MESSAGE_ERRO_INVALID_REFRESH_TOKEN = "Invalid refresh token"
     private val MESSAGE_ERRO_USER_ALREADY_EXISTS = "User already exists with the username %s"
+    private val MESSAGE_ERRO_USER_EMAIL_ALREADY_EXISTS = "User already exists with the email %s"
+    private val MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS = "User already exists with the document %s"
 
     private val passwordEncoder = BCryptPasswordEncoder()
 
@@ -39,7 +40,7 @@ class UserAppServiceImpl (
             throw UsernameAlreadyExistsException(MESSAGE_ERRO_USER_ALREADY_EXISTS.format(request.username))
 
         val encodedPassword = passwordEncoder.encode(request.password)
-        val user = UserMapperUtil.toUserApp(UserResponse(request.username, setOf(DEFAULT_ROLE)))
+        val user = UserMapperUtil.toUserApp(UserResponse(null, request.username, setOf(DEFAULT_ROLE)))
         user.password = encodedPassword
         userRepository.save(user)
         return UserMapperUtil.toUserDTO(user)
@@ -93,9 +94,26 @@ class UserAppServiceImpl (
 
     override fun updateUser(id: Long, request: UpdateUserRequest): UserResponse {
         val user = userRepository.findById(id).orElseThrow { UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND) }
+        this.checkUserUniqueness(user, request)
+        user.email = request.email
+        user.document = request.document
         user.roles = request.roles.toMutableSet()
+        user.firstName = request.firstName
+        user.lastName = request.lastName
+        user.phone = request.phone
         userRepository.save(user)
         return UserMapperUtil.toUserDTO(user)
+    }
+
+    private fun checkUserUniqueness(user: UserApp, request: UpdateUserRequest) {
+        val userWithSameEmail = userRepository.findByEmail(request.email)
+        if (userWithSameEmail != null && userWithSameEmail.id != user.id) {
+            throw UserEmailAlreadyExistsException(MESSAGE_ERRO_USER_EMAIL_ALREADY_EXISTS.format(request.email))
+        }
+        val userWithSameDocument = userRepository.findByDocument(request.document)
+        if (userWithSameDocument != null && userWithSameDocument.id != user.id) {
+            throw UserDocumentAlreadyExistsException(MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS.format(request.document))
+        }
     }
 
     override fun changePassword(username: String, request: ChangePasswordRequest): UserResponse {

@@ -3,9 +3,22 @@ package puc.controller
 import jakarta.validation.Valid
 import java.net.URI
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.*
-import puc.model.dto.request.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import puc.model.dto.request.LoginRequest
+import puc.model.dto.request.RefreshTokenRequest
+import puc.model.dto.request.RegisterRequest
+import puc.model.dto.request.UpdateUserRequest
+import puc.model.dto.request.ChangePasswordRequest
+
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
@@ -49,6 +62,7 @@ class UserAppController(val userService: UserAppService) {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: Long,
