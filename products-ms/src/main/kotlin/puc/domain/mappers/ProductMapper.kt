@@ -38,4 +38,16 @@ object ProductMapper {
             price = dto.price
         )
     }
+
+    fun domainToEntity(product: Product, productEntity: ProductEntity) {
+        productEntity.name = product.name
+        productEntity.brand = product.brand
+        productEntity.price = product.price
+        productEntity.color = product.color
+        productEntity.image = product.image
+        productEntity.weight = product.weight
+        productEntity.description = product.description
+        productEntity.category =  product.category.description
+        productEntity.measure = product.measure
+    }
 }
