@@ -32,6 +32,7 @@ class UserAppServiceImpl (
     private val MESSAGE_ERRO_USER_ALREADY_EXISTS = "User already exists with the username %s"
     private val MESSAGE_ERRO_USER_EMAIL_ALREADY_EXISTS = "User already exists with the email %s"
     private val MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS = "User already exists with the document %s"
+    private val MESSAGE_ERRO_INVALID_ROLE = "Invalid role %s"
 
     private val passwordEncoder = BCryptPasswordEncoder()
 
@@ -95,6 +96,7 @@ class UserAppServiceImpl (
     override fun updateUser(id: Long, request: UpdateUserRequest): UserResponse {
         val user = userRepository.findById(id).orElseThrow { UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND) }
         this.checkUserUniqueness(user, request)
+        this.checkIfRolesAreValid(request.roles)
         user.email = request.email
         user.document = request.document
         user.roles = request.roles.toMutableSet()
@@ -113,6 +115,16 @@ class UserAppServiceImpl (
         val userWithSameDocument = userRepository.findByDocument(request.document)
         if (userWithSameDocument != null && userWithSameDocument.id != user.id) {
             throw UserDocumentAlreadyExistsException(MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS.format(request.document))
+        }
+    }
+
+    private fun checkIfRolesAreValid(roles: Set<String>) {
+        val validRoles = setOf("ROLE_USER", "ROLE_USER_CLIENT")
+
+        roles.forEach {
+            if (!validRoles.contains(it)) {
+                throw InvalidRoleException(MESSAGE_ERRO_INVALID_ROLE.format(it))
+            }
         }
     }
 

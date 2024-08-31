@@ -68,14 +68,18 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{token}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "http://localhost:8083/users/me",
 					"protocol": "http",
@@ -603,7 +607,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n   \"roles\": [\"ROLE_USER\", \"ROLE_ADMIN\"]\n}"
+					"raw": "{\n   \"roles\": [\"ROLE_USER\", \"ROLE_USER_CLIENT\"],\n   \"document\": \"12028767650\",\n   \"firstName\": \"Joao\",\n   \"lastName\": \"Da Silva\",\n   \"email\": \"joaodasilva@gmail.com\",\n   \"phone\": \"319999999\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8083/users/1",

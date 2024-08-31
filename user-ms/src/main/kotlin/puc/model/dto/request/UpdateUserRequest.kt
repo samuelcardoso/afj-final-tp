@@ -4,14 +4,10 @@ import CpfCnpj
 import jakarta.annotation.Nullable
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import jakarta.validation.constraints.Pattern
 
 data class UpdateUserRequest(
     @field:Size(min = 1, message = "Must have at least one role")
-    val roles: Set<@Pattern(
-        regexp = "^(ROLE_USER|ROLE_USER_CLIENT)$",
-        message = "Invalid role"
-    ) String> = emptySet(),
+    val roles: Set<String> = emptySet(),
 
     @field:Size(min = 11, max = 14)
     @CpfCnpj
