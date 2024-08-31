@@ -1,6 +1,7 @@
 package puc.domain.products.model
 
 import puc.domain.enums.Category
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class Product(
@@ -15,7 +16,7 @@ data class Product(
     val category: Category,
     val brand:String,
     val dataRegister: LocalDateTime? = null
-){
+) : Serializable {
     init {
         require(name.isNotBlank()) { "Name must not be blank" }
         require(!price.isNaN()) { "Price must be a nan" }

@@ -1,6 +1,7 @@
 package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
@@ -20,7 +21,10 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         return filterProducts.map { ProductMapper.entityToDomain(it)  }
     }
 
+    @Cacheable(value = ["products"], key = "#id")
     override fun findById(id: String): Product? {
+        logger.info("Getting product by id ${id}")
+
         var result = productRepository.findById(id).getOrNull()
 
         return if (result != null) ProductMapper.entityToDomain(result) else null;
