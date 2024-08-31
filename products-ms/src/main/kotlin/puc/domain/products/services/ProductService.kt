@@ -12,12 +12,16 @@ import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
 import puc.domain.mappers.ProductMapper
 import puc.application.controllers.ProductController
+import puc.domain.products.events.*
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class ProductService(val productRepository: ProductRepository) : IProductService{
-    val logger = LoggerFactory.getLogger(this.javaClass)!!
+class ProductService(
+    val productRepository: ProductRepository,
+    val productEventPublisher: ProductEventPublisher
+) : IProductService{
 
+    val logger = LoggerFactory.getLogger(this.javaClass)!!
 
     override fun findAll(filterParams: FilterProductParamsDTO): PaginatedResponseDTO<Product> {
         val totalPages = getTotalPages(filterParams.pageSize)
@@ -58,6 +62,8 @@ class ProductService(val productRepository: ProductRepository) : IProductService
 
         logger.info("The product was successfully save under the id ${result.id}")
 
+        publishProductCreatedEvent(result)
+
         return ProductMapper.entityToDomain(result)
     }
 
@@ -79,6 +85,10 @@ class ProductService(val productRepository: ProductRepository) : IProductService
 
     override fun delete(productId: String) {
         productRepository.deleteById(productId)
+
+        logger.info("The product ${productId} was successfully deleted")
+
+        publishProductDeletedEvent(productId)
     }
 
     override fun update() {
@@ -89,8 +99,6 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         val totalElements = productRepository.count()
         return ((totalElements / pageSize) + if (totalElements % pageSize > 0) 1 else 0).toInt()
     }
-
-
 
     private fun findAllFilters(requestParam: FilterProductParamsDTO?, allProducts: MutableList<ProductEntity>) : List<ProductEntity> =
         allProducts.asSequence().filter { product ->
@@ -103,6 +111,28 @@ class ProductService(val productRepository: ProductRepository) : IProductService
             val withSelfRel = linkTo(ProductController::class.java).slash(item.id).withSelfRel()
             item.add(withSelfRel)
         }
+    }
+
+    private fun publishProductCreatedEvent(result: ProductEntity) {
+        val productRegisterEvent = ProductRegisteredEvent(
+            productId = result.id.toString(),
+            name = result.name,
+            price = result.price
+        )
+
+        productEventPublisher.publishProductRegisteredEvent(productRegisterEvent)
+
+        logger.info("Published RabbitMQ event for registered product ${result.id}")
+    }
+
+    private fun publishProductDeletedEvent(productId: String) {
+        val productDeletedEvent = ProductDeletedEvent(
+            productId = productId
+        )
+
+        productEventPublisher.publishProductDeletedEvent(productDeletedEvent)
+
+        logger.info("Published RabbitMQ event for deleted product ${productId}")
     }
 }
 
