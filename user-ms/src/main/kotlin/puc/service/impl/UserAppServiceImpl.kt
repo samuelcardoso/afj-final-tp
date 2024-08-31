@@ -36,7 +36,7 @@ class UserAppServiceImpl (
             throw UsernameAlreadyExistsException(MESSAGE_ERRO_USER_ALREADY_EXISTS.format(request.username))
 
         val encodedPassword = passwordEncoder.encode(request.password)
-        val user = UserMapperUtil.toUserApp(UserResponse(request.username, setOf(DEFAULT_ROLE)))
+        val user = UserMapperUtil.toUserApp(UserResponse(null, request.username, setOf(DEFAULT_ROLE)))
         user.password = encodedPassword
         userRepository.save(user)
         return UserMapperUtil.toUserDTO(user)
