@@ -16,6 +16,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
