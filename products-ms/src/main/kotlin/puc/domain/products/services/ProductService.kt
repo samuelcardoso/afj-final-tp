@@ -31,9 +31,9 @@ class ProductService(val productRepository: ProductRepository, val userService: 
     }
 
     override fun save(product: Product, user: User?): Product {
-        user ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found.");
-        product.userId = user.id
-        product.username = user.username
+        if (user != null) {
+            product.username = user.username
+        }
         
         logger.info("Saving product with name ${product.name}")
 

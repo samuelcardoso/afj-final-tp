@@ -22,7 +22,6 @@ object ProductMapper {
             description = entity.description,
             category =  Category.fromValue(entity.category),
             measure = entity.measure,
-            userId = entity.userId,
             username = entity.username
         )
     }
@@ -38,7 +37,6 @@ object ProductMapper {
             color = dto.color,
             name = dto.name,
             price = dto.price,
-            userId = dto.userId
         )
     }
 }

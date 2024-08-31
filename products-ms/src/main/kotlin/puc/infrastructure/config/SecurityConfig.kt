@@ -5,9 +5,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import puc.infrastructure.filters.AuthenticationFilter
+import puc.infrastructure.filters.AuthFilter
 
 
 @Configuration
@@ -16,11 +17,12 @@ import puc.infrastructure.filters.AuthenticationFilter
 class SecurityConfig() {
 
     @Bean
-    fun secureFilterChain(http: HttpSecurity, authenticationFilter: AuthenticationFilter): SecurityFilterChain {
+    fun secureFilterChain(http: HttpSecurity, authFilter: AuthFilter): SecurityFilterChain {
         http
             .csrf { it.disable() }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { it.anyRequest().authenticated() }
-            .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }

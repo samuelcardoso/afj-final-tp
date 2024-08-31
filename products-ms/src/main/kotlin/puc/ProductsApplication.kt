@@ -3,9 +3,7 @@ package puc
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import feign.RequestInterceptor
-import feign.RequestTemplate
-import org.aopalliance.intercept.Interceptor
+import feign.codec.ErrorDecoder
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cloud.openfeign.EnableFeignClients

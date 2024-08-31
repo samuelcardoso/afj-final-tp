@@ -38,4 +38,5 @@ class ProductsExceptionHandler: ResponseEntityExceptionHandler() {
         problemDetail.setProperty("timestamp", LocalDate.now())
         return problemDetail
     }
+
 }

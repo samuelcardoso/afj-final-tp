@@ -20,6 +20,7 @@ import puc.domain.users.model.User
 class ProductController(val productService: IProductService) {
 
     @GetMapping
+    @RolesAllowed("USER")
     fun getAllProducts(
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) price: Double?,
@@ -48,6 +49,7 @@ class ProductController(val productService: IProductService) {
     }
 
     @GetMapping("/{id}")
+    @RolesAllowed("USER")
     fun getById(@PathVariable id: String): Product? {
         return productService.findById(id)
     }
@@ -66,6 +68,7 @@ class ProductController(val productService: IProductService) {
     }
 
     @DeleteMapping("/{idProduct}")
+    @RolesAllowed("USER")
     fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
         productService.delete(idProduct)
         return ResponseEntity.noContent().build()
