@@ -19,6 +19,10 @@ class PurchaseController(val rabbitTemplate: RabbitTemplate, val jwtUtil: JwtUti
 
     @PostMapping("/buy")
     fun buy(@RequestHeader("Authorization") token: String, @RequestBody purchaseRequest: PurchaseRequest): ResponseEntity<String> {
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("Failed to authenticate.")
+        }
+
         val userId = jwtUtil.extractUserId(token.removePrefix("Bearer "))
         val purchaseMessage = PurchaseMessage(userId, purchaseRequest.productId, purchaseRequest.quantity)
         val objectMapper = ObjectMapper()
