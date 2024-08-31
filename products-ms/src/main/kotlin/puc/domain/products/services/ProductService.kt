@@ -62,6 +62,22 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         return ProductMapper.entityToDomain(result)
     }
 
+    override fun update(product: Product, id: String): Product? {
+        val productDb = productRepository.findById(id).orElseThrow {
+            IllegalArgumentException("Product id ${id} not found")
+        }
+
+        logger.info("Updating product with id ${id}")
+
+        ProductMapper.domainToEntity(product, productDb)
+
+        productRepository.save(productDb)
+
+        logger.info("The product ${productDb.id} was successfully updated")
+
+        return ProductMapper.entityToDomain(productDb)
+    }
+
     override fun delete(productId: String) {
         productRepository.deleteById(productId)
     }
