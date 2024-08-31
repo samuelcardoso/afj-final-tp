@@ -6,11 +6,8 @@ import puc.gateway.UserMsRestTemplate
 @Component
 class JwtUtil(val userMsRestTemplate: UserMsRestTemplate) {
 
-    fun validateToken(token: String): Boolean {
-        return userMsRestTemplate.getMe(token).isPresent
-    }
-
-    fun extractUserId(token: String): Long {
-        return 1
+    fun getUserId(token: String): Long {
+        val userResponse = userMsRestTemplate.getMe(token).orElseThrow{ RuntimeException("Failed to authenticate.") }
+        return userResponse.id ?: throw RuntimeException("ID not present in the response.");
     }
 }

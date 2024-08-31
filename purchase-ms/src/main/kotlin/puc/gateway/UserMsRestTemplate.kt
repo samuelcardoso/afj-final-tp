@@ -16,7 +16,7 @@ class UserMsRestTemplate(val restTemplateConfig: RestTemplateConfig) {
     @Value("\${user-ms.router.me}")
     lateinit var ROUTE_ME: String
 
-    fun getMe(token: String):Optional<UserResponse> {
+    fun getMe(token: String): Optional<UserResponse> {
         val headers = HttpHeaders().apply {
             set("Authorization", token)
         }
