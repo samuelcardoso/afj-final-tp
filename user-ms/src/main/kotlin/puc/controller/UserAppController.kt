@@ -4,14 +4,12 @@ import jakarta.validation.Valid
 import java.net.URI
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import puc.model.dto.request.LoginRequest
+import puc.model.dto.request.RefreshTokenRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.LoginResponse
+import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
 import puc.service.UserAppService
 
@@ -39,5 +37,16 @@ class UserAppController(val userService: UserAppService) {
         val auth = SecurityContextHolder.getContext().authentication
         val userDetails = userService.getUserInfo(auth.name)
         return ResponseEntity.ok(userDetails)
+    }
+
+    @PostMapping("/refresh-token")
+    fun refreshToken(
+        @Valid
+        @RequestBody(required = true)
+        request: RefreshTokenRequest
+    ): ResponseEntity<RefreshTokenResponse> {
+        val refreshToken = request.refreshToken
+        val refreshTokenResponse = userService.refreshToken(refreshToken)
+        return ResponseEntity.ok(refreshTokenResponse)
     }
 }
