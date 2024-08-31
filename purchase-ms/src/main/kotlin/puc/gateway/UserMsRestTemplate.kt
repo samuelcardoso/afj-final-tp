@@ -5,6 +5,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
+import org.springframework.web.client.RestTemplate
 import org.springframework.stereotype.Component
 import puc.config.RestTemplateConfig
 import puc.dto.response.UserResponse
@@ -13,18 +14,30 @@ import java.util.Optional
 @Component
 class UserMsRestTemplate(val restTemplateConfig: RestTemplateConfig) {
 
-    @Value("\${user-ms.router.me}")
-    lateinit var ROUTE_ME: String
+    @Value("\${base-user-ms.router}")
+    lateinit var BASE_ROUTE: String
 
-    fun getMe(token: String): Optional<UserResponse> {
+    fun createHttpEntity(token: String): HttpEntity<String> {
         val headers = HttpHeaders().apply {
             set("Authorization", token)
         }
+        return HttpEntity(headers)
+    }
 
-        val entity = HttpEntity<String>(headers)
-        val response: ResponseEntity<UserResponse> = restTemplateConfig.restTemplate().exchange(ROUTE_ME, HttpMethod.GET, entity, UserResponse::class.java)
-
+    fun <T> executeRequest(
+        restTemplate: RestTemplate,
+        route: String,
+        httpMethod: HttpMethod,
+        entity: HttpEntity<*>,
+        responseType: Class<T>
+    ): Optional<T> {
+        val response: ResponseEntity<T> = restTemplate.exchange(route, httpMethod, entity, responseType)
         return Optional.ofNullable(response.body)
     }
 
+    fun getMe(token: String): Optional<UserResponse> {
+        val route = BASE_ROUTE + "me"
+        val entity = createHttpEntity(token)
+        return executeRequest(restTemplateConfig.restTemplate(), route, HttpMethod.GET, entity, UserResponse::class.java)
+    }
 }
