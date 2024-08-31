@@ -1,6 +1,7 @@
 package puc.domain.products.services
 
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
@@ -45,7 +46,10 @@ class ProductService(val productRepository: ProductRepository) : IProductService
         )
     }
 
+    @Cacheable(value = ["products"], key = "#id")
     override fun findById(id: String): Product? {
+        logger.info("Getting product by id ${id}")
+
         val result = productRepository.findById(id).getOrNull()
 
         return if (result != null) ProductMapper.entityToDomain(result) else null;
