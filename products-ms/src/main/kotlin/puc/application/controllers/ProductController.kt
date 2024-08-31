@@ -1,15 +1,17 @@
 package puc.application.controllers
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 import puc.application.dtos.ProductDTO
 import puc.domain.products.services.IProductService
 import puc.domain.products.model.Product
-import puc.application._shared.ProductMapper
+import puc.domain.products.mappers.ProductMapper
 import puc.application.dtos.FilterProductParamsDTO
 import puc.application.dtos.PaginatedResponseDTO
 import puc.application._shared.ProductEventPublisher
+import puc.domain.products.services.exceptions.ProductNotFoundException
 
 @RestController
 @RequestMapping("/products")
@@ -40,8 +42,13 @@ class ProductController(
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): Product? {
-        return productService.findById(id)
+    fun getById(@PathVariable id: String): ResponseEntity<Any> {
+        return try {
+            val product = productService.findById(id)
+            ResponseEntity.ok(mapOf("product" to product))
+        } catch (e: ProductNotFoundException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to e.message))
+        }
     }
 
     @PostMapping
@@ -71,11 +78,13 @@ class ProductController(
 
     @DeleteMapping("/{idProduct}")
     fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
-        productService.delete(idProduct)
-
-        productEventPublisher.publishProductDeletedEvent(idProduct)
-
-        return ResponseEntity.noContent().build()
+        return try {
+            productService.delete(idProduct)
+            productEventPublisher.publishProductDeletedEvent(idProduct)
+            ResponseEntity.ok(mapOf("message" to "Product deleted successfully"))
+        } catch (e : ProductNotFoundException){
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to e.message))
+        }
     }
 
 }

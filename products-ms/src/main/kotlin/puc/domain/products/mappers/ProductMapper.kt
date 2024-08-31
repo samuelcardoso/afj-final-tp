@@ -1,4 +1,4 @@
-﻿package puc.application._shared
+﻿package puc.domain.products.mappers
 
 import puc.application.dtos.ProductDTO
 import puc.domain.enums.Category

@@ -10,15 +10,13 @@ import puc.application.dtos.PaginationMetaDTO
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
-import puc.application._shared.ProductMapper
+import puc.domain.products.mappers.ProductMapper
 import puc.application.controllers.ProductController
-import puc.application._shared.ProductEventPublisher
-import kotlin.jvm.optionals.getOrNull
+import puc.domain.products.services.exceptions.ProductNotFoundException
 
 @Service
 class ProductService(
-    val productRepository: ProductRepository,
-    val productEventPublisher: ProductEventPublisher
+    val productRepository: ProductRepository
 ) : IProductService{
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
@@ -30,10 +28,7 @@ class ProductService(
 
         val pageable = PageRequest.of(filterParams.page.minus(1), filterParams.pageSize)
         val pagedProducts = productRepository.findAll(pageable)
-
         val filteredProducts = findAllFilters(filterParams, pagedProducts.content)
-
-
         val resultProducts = filteredProducts.map { ProductMapper.entityToDomain(it) }
 
         linkToProductController(resultProducts)
@@ -49,10 +44,11 @@ class ProductService(
         )
     }
 
-    override fun findById(id: String): Product? {
-        val result = productRepository.findById(id).getOrNull()
+    override fun findById(id: String): Product {
+        val result = productRepository.findById(id)
+            .orElseThrow { ProductNotFoundException("Product with ID $id not found") }
 
-        return if (result != null) ProductMapper.entityToDomain(result) else null;
+        return ProductMapper.entityToDomain(result)
     }
 
     override fun save(product: Product): Product {
@@ -82,13 +78,12 @@ class ProductService(
     }
 
     override fun delete(productId: String) {
+        if (!productRepository.existsById(productId)) {
+            throw ProductNotFoundException("Product with ID $productId not found")
+        }
+
         productRepository.deleteById(productId)
-
         logger.info("The product ${productId} was successfully deleted")
-    }
-
-    override fun update() {
-        TODO("Not yet implemented")
     }
 
     private fun getTotalPages(pageSize: Int): Int {
