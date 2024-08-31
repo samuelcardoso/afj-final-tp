@@ -7,6 +7,7 @@ object UserMapperUtil {
 
     fun toUserDTO(userApp: UserApp): UserResponse {
         return UserResponse(
+            id = userApp.id,
             username = userApp.username,
             roles = userApp.roles
         )
