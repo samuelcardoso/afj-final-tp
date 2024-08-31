@@ -3,5 +3,6 @@
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ProductDeletedEvent(
-    @JsonProperty("productId") val productId: String
+    @JsonProperty("productId")
+    val productId: String
 )

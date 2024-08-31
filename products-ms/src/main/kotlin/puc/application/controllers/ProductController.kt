@@ -6,13 +6,17 @@ import org.springframework.web.util.UriComponentsBuilder
 import puc.application.dtos.ProductDTO
 import puc.domain.products.services.IProductService
 import puc.domain.products.model.Product
-import puc.domain.mappers.ProductMapper
+import puc.application._shared.ProductMapper
 import puc.application.dtos.FilterProductParamsDTO
 import puc.application.dtos.PaginatedResponseDTO
+import puc.application._shared.ProductEventPublisher
 
 @RestController
 @RequestMapping("/products")
-class ProductController(val productService: IProductService) {
+class ProductController(
+    val productService: IProductService,
+    val productEventPublisher: ProductEventPublisher
+) {
 
     @GetMapping
     fun getAllProducts(
@@ -48,6 +52,8 @@ class ProductController(val productService: IProductService) {
             .path("/products/{id}")
             .buildAndExpand(result.id).toUri()
 
+        productEventPublisher.publishProductRegisteredEvent(result)
+
         return ResponseEntity.created(location).build()
     }
 
@@ -66,6 +72,9 @@ class ProductController(val productService: IProductService) {
     @DeleteMapping("/{idProduct}")
     fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
         productService.delete(idProduct)
+
+        productEventPublisher.publishProductDeletedEvent(idProduct)
+
         return ResponseEntity.noContent().build()
     }
 

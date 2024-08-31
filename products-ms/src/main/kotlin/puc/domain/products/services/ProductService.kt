@@ -10,9 +10,9 @@ import puc.application.dtos.PaginationMetaDTO
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
-import puc.domain.mappers.ProductMapper
+import puc.application._shared.ProductMapper
 import puc.application.controllers.ProductController
-import puc.domain.products.events.*
+import puc.application._shared.ProductEventPublisher
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -62,8 +62,6 @@ class ProductService(
 
         logger.info("The product was successfully save under the id ${result.id}")
 
-        publishProductCreatedEvent(result)
-
         return ProductMapper.entityToDomain(result)
     }
 
@@ -87,8 +85,6 @@ class ProductService(
         productRepository.deleteById(productId)
 
         logger.info("The product ${productId} was successfully deleted")
-
-        publishProductDeletedEvent(productId)
     }
 
     override fun update() {
@@ -111,28 +107,6 @@ class ProductService(
             val withSelfRel = linkTo(ProductController::class.java).slash(item.id).withSelfRel()
             item.add(withSelfRel)
         }
-    }
-
-    private fun publishProductCreatedEvent(result: ProductEntity) {
-        val productRegisterEvent = ProductRegisteredEvent(
-            productId = result.id.toString(),
-            name = result.name,
-            price = result.price
-        )
-
-        productEventPublisher.publishProductRegisteredEvent(productRegisterEvent)
-
-        logger.info("Published RabbitMQ event for registered product ${result.id}")
-    }
-
-    private fun publishProductDeletedEvent(productId: String) {
-        val productDeletedEvent = ProductDeletedEvent(
-            productId = productId
-        )
-
-        productEventPublisher.publishProductDeletedEvent(productDeletedEvent)
-
-        logger.info("Published RabbitMQ event for deleted product ${productId}")
     }
 }
 
