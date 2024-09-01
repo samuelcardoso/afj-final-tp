@@ -22,7 +22,10 @@ class SecurityConfig(
 
     private val permitAllEndpoints = arrayOf(
         "/users/register",
-        "/users/login"
+        "/users/login",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/"
     )
 
     @Bean
