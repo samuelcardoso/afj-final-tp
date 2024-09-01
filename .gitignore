@@ -6,3 +6,5 @@ gradle/
 gradlew
 gradlew.bat
 target_db/
+.DS_Store
+*.log
