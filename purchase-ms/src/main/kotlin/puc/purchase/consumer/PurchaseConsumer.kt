@@ -9,7 +9,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import puc.purchase.dto.PurchaseMessage
 import puc.purchase.service.PurchaseService
@@ -38,12 +37,11 @@ class PurchaseConsumer(
             // Chama o serviço stock-ms para decrementar o estoque
             val requestBody="";
             val url = UriComponentsBuilder.fromUriString("http://localhost:8082/write-down/${purchaseMessage.productId}/${purchaseMessage.quantity}").toUriString()
-            val requestEntity = HttpEntity<StockRequest>(null, httpHeaders);
-            val response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Stock::class.java)
+            val response = restTemplate.exchange(url, HttpMethod.PUT, HttpEntity<StockRequest>(null, httpHeaders), Stock::class.java)
 
             // Deserializa a string JSON em um objeto
-            val stockObj = (ObjectMapper()).writeValueAsBytes(response.getBody())
-            val stock = (ObjectMapper()).readValue(stockObj, Stock::class.java)
+            val reponseObj = (ObjectMapper()).writeValueAsBytes(response.getBody())
+            val stock = (ObjectMapper()).readValue(reponseObj, Stock::class.java)
 
             val purchase = stock.let {
                 Purchase(null, it.productId)
