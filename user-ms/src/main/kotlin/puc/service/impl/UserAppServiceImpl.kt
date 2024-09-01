@@ -1,5 +1,6 @@
 package puc.service.impl
 
+import jakarta.servlet.http.HttpServletRequest
 import java.util.Objects
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -9,6 +10,7 @@ import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.UserResponse
+import puc.model.enum.Role
 import puc.repository.UserAppRepository
 import puc.service.UserAppService
 import puc.util.JwtUtil
@@ -17,9 +19,9 @@ import puc.util.UserMapperUtil
 @Service
 class UserAppServiceImpl (
     val userRepository: UserAppRepository,
-    val jwtUtil: JwtUtil
+    val jwtUtil: JwtUtil,
+    val httpServletRequest: HttpServletRequest
 ): UserAppService {
-    private var DEFAULT_ROLE = "ROLE_USER"
 
     private val BEARER = "Bearer "
 
@@ -32,10 +34,11 @@ class UserAppServiceImpl (
     override fun register(request: RegisterRequest) : UserResponse {
         if (Objects.nonNull(findUserByUsername(request.username)))
             throw UsernameAlreadyExistsException(MESSAGE_ERRO_USER_ALREADY_EXISTS.format(request.username))
-
+          val role = if ("/users/register/admin" == httpServletRequest.requestURI) Role.ROLE_ADMIN.name else Role.ROLE_USER.name
 //        val encodedPassword = passwordEncoder.encode(request.password)
-        val user = UserMapperUtil.toUserApp(UserResponse(request.username, setOf(DEFAULT_ROLE)))
-//        user.password = encodedPassword
+        val user = UserMapperUtil.toUserApp(UserResponse(request.username, setOf(role)))
+
+//      user.password = encodedPassword
         userRepository.save(user)
         return UserMapperUtil.toUserDTO(user)
     }

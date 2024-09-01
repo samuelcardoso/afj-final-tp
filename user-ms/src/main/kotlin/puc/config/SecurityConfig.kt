@@ -20,6 +20,7 @@ class SecurityConfig(
 
     private val permitAllEndpoints = arrayOf(
         "/users/register",
+        "/users/register/admin",
         "/users/login",
         "/swagger-ui/**",
     )

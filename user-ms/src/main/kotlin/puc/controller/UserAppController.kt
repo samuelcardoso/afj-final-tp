@@ -28,6 +28,13 @@ class UserAppController(val userService: UserAppService) {
         return ResponseEntity.created(url).body(userDTOResponse)
     }
 
+    @PostMapping("/register/admin")
+    fun registerAdmin(@Valid @RequestBody request: RegisterRequest): ResponseEntity<UserResponse> {
+        val userDTOResponse = userService.register(request)
+        val url = URI.create(ROUTE_ME)
+        return ResponseEntity.created(url).body(userDTOResponse)
+    }
+
     @PostMapping("/login")
     fun login(@Valid @RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
         val loginResponse = userService.login(request.username, request.password)
