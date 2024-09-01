@@ -1,13 +1,14 @@
-package puc.products.`in`
+package puc.products.application
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import puc.application.dtos.ProductDTO
 
-class IncomingProductTest {
+class ProductDTOTest {
     @Test
     fun `should create incoming product successfully`(){
         assertDoesNotThrow {
-            IncomingProduct("Testing product 01", 20.1)
+            ProductDTO("Testing product 01", 20.1)
         }
     }
 }
