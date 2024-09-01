@@ -26,6 +26,7 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
 }
 
 tasks.withType<KotlinCompile> {

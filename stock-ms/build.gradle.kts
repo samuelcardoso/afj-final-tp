@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -25,6 +26,9 @@ dependencies {
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    //logging
+    //implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 }
 
 tasks.withType<KotlinCompile> {
