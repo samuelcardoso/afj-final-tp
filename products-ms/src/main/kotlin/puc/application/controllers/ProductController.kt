@@ -3,16 +3,20 @@ package puc.application.controllers
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
-import puc.application.dtos.ProductDTO
-import puc.domain.products.services.IProductService
-import puc.domain.products.model.Product
-import puc.domain.mappers.ProductMapper
+import puc.application._shared.ProductEventPublisher
 import puc.application.dtos.FilterProductParamsDTO
 import puc.application.dtos.PaginatedResponseDTO
+import puc.application.dtos.ProductDTO
+import puc.domain.products.mappers.ProductMapper
+import puc.domain.products.model.Product
+import puc.domain.products.services.IProductService
 
 @RestController
 @RequestMapping("/products")
-class ProductController(val productService: IProductService) {
+class ProductController(
+    val productService: IProductService,
+    val productEventPublisher: ProductEventPublisher
+) {
 
     @GetMapping
     fun getAllProducts(
@@ -36,8 +40,9 @@ class ProductController(val productService: IProductService) {
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): Product? {
-        return productService.findById(id)
+    fun getById(@PathVariable id: String): ResponseEntity<Any> {
+        val product = productService.findById(id)
+        return ResponseEntity.ok(mapOf("product" to product))
     }
 
     @PostMapping
@@ -47,6 +52,8 @@ class ProductController(val productService: IProductService) {
         val location = uriComponentsBuilder
             .path("/products/{id}")
             .buildAndExpand(result.id).toUri()
+
+        productEventPublisher.publishProductRegisteredEvent(result)
 
         return ResponseEntity.created(location).build()
     }
@@ -66,7 +73,8 @@ class ProductController(val productService: IProductService) {
     @DeleteMapping("/{idProduct}")
     fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
         productService.delete(idProduct)
-        return ResponseEntity.noContent().build()
+        productEventPublisher.publishProductDeletedEvent(idProduct)
+        return ResponseEntity.ok(mapOf("message" to "Product deleted successfully"))
     }
 
 }

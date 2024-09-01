@@ -1,4 +1,4 @@
-﻿package puc.domain.mappers
+﻿package puc.domain.products.mappers
 
 import puc.application.dtos.ProductDTO
 import puc.domain.enums.Category
@@ -6,8 +6,6 @@ import puc.domain.products.model.Product
 import puc.infrastructure.entities.ProductEntity
 
 object ProductMapper {
-
-//    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     fun entityToDomain(entity: ProductEntity): Product {
         return Product(
