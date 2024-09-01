@@ -12,6 +12,6 @@ interface UserAppService {
     fun login(username: String, password: String): LoginResponse
     fun getUserInfo(username: String): UserResponse
     fun refreshToken(refreshToken: String): RefreshTokenResponse
-    fun updateUser(id: Long, request: UpdateUserRequest): UserResponse
+    fun updateUser(id: Long, request: UpdateUserRequest, authUsername: String, authRoles: Set<String>): UserResponse
     fun changePassword(username: String, request: ChangePasswordRequest): UserResponse
 }

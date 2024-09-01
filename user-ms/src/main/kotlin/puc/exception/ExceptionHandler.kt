@@ -9,6 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import puc.exception.custom.InvalidCredentialsException
+import puc.exception.custom.InvalidRoleException
+import puc.exception.custom.UserDocumentAlreadyExistsException
+import puc.exception.custom.UserEmailAlreadyExistsException
 import puc.exception.custom.UserNotFoundException
 import puc.exception.custom.UsernameAlreadyExistsException
 
@@ -82,6 +85,50 @@ class ExceptionHandler {
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(UserEmailAlreadyExistsException::class)
+    fun handleUserEmailAlreadyExistsException(
+        ex: UserEmailAlreadyExistsException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            timestamp = LocalDateTime.now(),
+            status = HttpStatus.CONFLICT.value(),
+            error = HttpStatus.CONFLICT.reasonPhrase,
+            message = ex.message,
+            path = request.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.CONFLICT)
+    }
+
+    @ExceptionHandler(UserDocumentAlreadyExistsException::class)
+    fun handleUserDocumentAlreadyExistsException(
+        ex: UserDocumentAlreadyExistsException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            timestamp = LocalDateTime.now(),
+            status = HttpStatus.CONFLICT.value(),
+            error = HttpStatus.CONFLICT.reasonPhrase,
+            message = ex.message,
+            path = request.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.CONFLICT)
+    }
+
+    @ExceptionHandler(InvalidRoleException::class)
+    fun handleInvalidRoleException(
+        ex: InvalidRoleException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            timestamp = LocalDateTime.now(),
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = HttpStatus.BAD_REQUEST.reasonPhrase,
+            message = ex.message,
+            path = request.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
 
     @ExceptionHandler(Exception::class)
     fun handleException(
