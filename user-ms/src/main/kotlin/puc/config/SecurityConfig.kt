@@ -25,7 +25,14 @@ class SecurityConfig(
         "/users/login",
         "/swagger-ui/**",
         "/swagger-ui.html",
-        "/"
+        "/",
+        "/actuator/health",
+        "/actuator/info"
+    )
+
+    private val adminEndpoints = arrayOf(
+        "/actuator/metrics",
+        "/actuator/trace"
     )
 
     @Bean
@@ -35,6 +42,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(*permitAllEndpoints).permitAll()
+                it.requestMatchers(*adminEndpoints).hasAnyRole("ADMIN")
                 it.anyRequest().authenticated()
             }
             .headers { headers ->
