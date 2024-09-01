@@ -10,10 +10,10 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import puc.service.PurchaseService
 import jakarta.validation.Valid
+import puc.vo.JWT
 
 @Serializable
 data class ErrorGateway(val timestamp: String, val status: Int, val error: String, val path: String)
-import puc.vo.JWT
 
 @RestController
 @RequestMapping("/purchase")
