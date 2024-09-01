@@ -23,6 +23,8 @@ class SecurityConfig(
         "/users/register/admin",
         "/users/login",
         "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/"
     )
 
     @Bean

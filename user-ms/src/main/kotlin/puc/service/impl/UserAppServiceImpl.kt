@@ -2,7 +2,7 @@ package puc.service.impl
 
 import jakarta.servlet.http.HttpServletRequest
 import java.util.Objects
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import puc.exception.custom.InvalidCredentialsException
 import puc.exception.custom.UserNotFoundException
@@ -29,16 +29,16 @@ class UserAppServiceImpl (
     private val MESSAGE_ERRO_INVALID_CREDENTIALS = "Invalid credentials"
     private val MESSAGE_ERRO_USER_ALREADY_EXISTS = "User already exists with the username %s"
 
-//    private val passwordEncoder = BCryptPasswordEncoder()
+    private val passwordEncoder = BCryptPasswordEncoder()
 
     override fun register(request: RegisterRequest) : UserResponse {
         if (Objects.nonNull(findUserByUsername(request.username)))
             throw UsernameAlreadyExistsException(MESSAGE_ERRO_USER_ALREADY_EXISTS.format(request.username))
           val role = if ("/users/register/admin" == httpServletRequest.requestURI) Role.ROLE_ADMIN.name else Role.ROLE_USER.name
-//        val encodedPassword = passwordEncoder.encode(request.password)
+        val encodedPassword = passwordEncoder.encode(request.password)
         val user = UserMapperUtil.toUserApp(UserResponse(request.username, setOf(role)))
 
-//      user.password = encodedPassword
+      user.password = encodedPassword
         userRepository.save(user)
         return UserMapperUtil.toUserDTO(user)
     }
@@ -46,8 +46,8 @@ class UserAppServiceImpl (
     override fun login(username: String, password: String): LoginResponse {
         val user = userRepository.findByUsername(username) ?: throw UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND)
 
-//        if (!passwordEncoder.matches(password, user.password))
-//            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
+        if (!passwordEncoder.matches(password, user.password))
+            throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_CREDENTIALS)
 
         var token = jwtUtil.generateToken(user.username, user.roles)
         val expiresIn = jwtUtil.getExpirationTime(token)
