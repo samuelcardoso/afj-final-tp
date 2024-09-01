@@ -16,8 +16,12 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.hateoas:spring-hateoas:2.3.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
