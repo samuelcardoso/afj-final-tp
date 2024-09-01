@@ -32,3 +32,16 @@ services:
     depends_on:
       - prometheus-products-ms
     user: root
+
+  localstack:
+    image: localstack/localstack:0.12.2
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=secretsmanager
+      - USE_SSL=0
+      - AWS_ACCESS_KEY_ID=TEST
+      - AWS_SECRET_ACCESS_KEY=TEST
+    volumes:
+      - "./localstack-scripts:/docker-entrypoint-initaws.d"
+
