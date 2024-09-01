@@ -18,8 +18,6 @@ class PurchaseService(val rabbitTemplate: RabbitTemplate) {
     lateinit var routingKey: String
 
     fun sendMessage(purchaseRequest: PurchaseRequest, userId: Long) {
-        val factory = SimpleRabbitListenerContainerFactory()
-        factory.
         val purchaseMessage = PurchaseMessage(userId, purchaseRequest.productId, purchaseRequest.quantity)
         val objectMapper = ObjectMapper()
         val messageAsString = objectMapper.writeValueAsString(purchaseMessage)
