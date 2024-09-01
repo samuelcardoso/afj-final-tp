@@ -31,5 +31,6 @@ class PurchaseController(val rabbitTemplate: RabbitTemplate, val jwtUtil: JwtUti
         }
         return ResponseEntity.ok("Purchase request sent.")
     }
+
 }
 

@@ -8,6 +8,6 @@ import jakarta.persistence.*
 data class Purchase(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val productId: String,
+    //val productId: String,
     val quantity: Int,
 )

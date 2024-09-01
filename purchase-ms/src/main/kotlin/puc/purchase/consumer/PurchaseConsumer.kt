@@ -43,8 +43,9 @@ class PurchaseConsumer(
             val reponseObj = (ObjectMapper()).writeValueAsBytes(response.getBody())
             val stock = (ObjectMapper()).readValue(reponseObj, Stock::class.java)
 
+
             val purchase = stock.let {
-                Purchase(null, it.productId)
+                Purchase(null,it.quantity)
             }
 
             // Lógica para salvar a compra no banco de dados pode ser adicionada aqui
