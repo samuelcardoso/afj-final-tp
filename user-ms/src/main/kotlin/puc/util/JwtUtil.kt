@@ -5,12 +5,14 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import java.util.Date
 import javax.crypto.SecretKey
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class JwtUtil {
+class JwtUtil(
+    @Value("\${jwt.secret}") private val secret: String
+) {
 
-    private val secret = "a_secure_random_string_for_signing_purposes_with_at_least_256_bits"
     private val key: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
 
     private val ROLES_KEY = "roles"

@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3309/userdb
+    username: root
+    password: rootpassword
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8083
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    use-root-path: true
+  api-docs:
+    path: /swagger-ui/api-docs
+  packages-to-scan: puc.controller
+
+jwt:
+  secret: a_secure_random_string_for_signing_purposes_with_at_least_256_bits
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    trace:
+      enabled: true
+  security:
+    enabled: false

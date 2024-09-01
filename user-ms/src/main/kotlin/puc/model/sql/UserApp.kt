@@ -12,8 +12,9 @@ import jakarta.persistence.PrePersist
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import java.time.LocalDateTime
+import puc.model.enum.RoleEnum
 
-private val DEFAULT_ROLE = "ROLE_USER"
+private val DEFAULT_ROLEEnum = RoleEnum.ROLE_USER.toString()
 
 @Entity
 data class UserApp(
@@ -30,7 +31,7 @@ data class UserApp(
     var password: String,
 
     @ElementCollection(fetch = FetchType.EAGER)
-    var roles: MutableSet<String> = mutableSetOf(DEFAULT_ROLE),
+    var roles: MutableSet<String> = mutableSetOf(DEFAULT_ROLEEnum),
 
     @Column(name = "document", length = 14, unique = true, nullable = true)
     @Nullable

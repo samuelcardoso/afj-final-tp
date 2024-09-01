@@ -3,10 +3,10 @@ package puc.service.impl
 import java.util.Objects
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import puc.exception.custom.UserDocumentAlreadyExistsException
-import puc.exception.custom.InvalidRoleException
-import puc.exception.custom.UserEmailAlreadyExistsException
 import puc.exception.custom.InvalidCredentialsException
+import puc.exception.custom.InvalidRoleException
+import puc.exception.custom.UserDocumentAlreadyExistsException
+import puc.exception.custom.UserEmailAlreadyExistsException
 import puc.exception.custom.UserNotFoundException
 import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.ChangePasswordRequest
@@ -15,6 +15,7 @@ import puc.model.dto.request.UpdateUserRequest
 import puc.model.dto.response.LoginResponse
 import puc.model.dto.response.RefreshTokenResponse
 import puc.model.dto.response.UserResponse
+import puc.model.enum.RoleEnum
 import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
 import puc.service.UserAppService
@@ -38,6 +39,8 @@ class UserAppServiceImpl (
     private val MESSAGE_ERRO_USER_EMAIL_ALREADY_EXISTS = "User already exists with the email %s"
     private val MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS = "User already exists with the document %s"
     private val MESSAGE_ERRO_INVALID_ROLE = "Invalid role %s"
+    private val MESSAGE_ERRO_INVALID_ROLE_USER = "User with ROLE_USER can only update themselves"
+    private val MESSAGE_ERRO_INVALID_ROLE_USER_ROLE = "User with ROLE_USER can only have ROLE_USER"
 
     private val passwordEncoder = BCryptPasswordEncoder()
 
@@ -107,8 +110,17 @@ class UserAppServiceImpl (
         )
     }
 
-    override fun updateUser(id: Long, request: UpdateUserRequest): UserResponse {
+    override fun updateUser(id: Long, request: UpdateUserRequest, authUsername: String, authRoles: Set<String>): UserResponse {
         val user = userRepository.findById(id).orElseThrow { UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND) }
+        val isAdmin = authRoles.contains(RoleEnum.ROLE_ADMIN.name)
+        val isSelfUpdate = user.username == authUsername
+
+        if (!isAdmin && !isSelfUpdate)
+            throw InvalidRoleException(MESSAGE_ERRO_INVALID_ROLE_USER)
+
+        if (!isAdmin && request.roles != setOf(RoleEnum.ROLE_USER.name))
+            throw InvalidRoleException(MESSAGE_ERRO_INVALID_ROLE_USER_ROLE)
+
         this.checkUserUniqueness(user, request)
         this.checkIfRolesAreValid(request.roles)
         user.email = request.email
@@ -123,30 +135,28 @@ class UserAppServiceImpl (
 
     private fun checkUserUniqueness(user: UserApp, request: UpdateUserRequest) {
         val userWithSameEmail = userRepository.findByEmail(request.email)
-        if (userWithSameEmail != null && userWithSameEmail.id != user.id) {
+        if (userWithSameEmail != null && userWithSameEmail.id != user.id)
             throw UserEmailAlreadyExistsException(MESSAGE_ERRO_USER_EMAIL_ALREADY_EXISTS.format(request.email))
-        }
+
         val userWithSameDocument = userRepository.findByDocument(request.document)
-        if (userWithSameDocument != null && userWithSameDocument.id != user.id) {
+        if (userWithSameDocument != null && userWithSameDocument.id != user.id)
             throw UserDocumentAlreadyExistsException(MESSAGE_ERRO_USER_DOCUMENT_ALREADY_EXISTS.format(request.document))
-        }
     }
 
     private fun checkIfRolesAreValid(roles: Set<String>) {
-        val validRoles = setOf("ROLE_USER", "ROLE_USER_CLIENT")
+        val validRoles = RoleEnum.values().map { it.name }.toSet()
 
         roles.forEach {
-            if (!validRoles.contains(it)) {
+            if (!validRoles.contains(it))
                 throw InvalidRoleException(MESSAGE_ERRO_INVALID_ROLE.format(it))
-            }
         }
     }
 
     override fun changePassword(username: String, request: ChangePasswordRequest): UserResponse {
         val user = userRepository.findByUsername(username) ?: throw UserNotFoundException(MESSAGE_ERRO_USER_NOT_FOUND)
-        if (!passwordEncoder.matches(request.oldPassword, user.password)) {
+        if (!passwordEncoder.matches(request.oldPassword, user.password))
             throw InvalidCredentialsException(MESSAGE_ERRO_INVALID_OLD_PASSWORD)
-        }
+
         val encodedPassword = passwordEncoder.encode(request.newPassword)
         user.password = encodedPassword
         userRepository.save(user)
