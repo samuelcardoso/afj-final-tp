@@ -24,14 +24,14 @@ class UserMsRestTemplate(val restTemplateConfig: RestTemplateConfig) {
         return HttpEntity(headers)
     }
 
-    fun <T> executeRequest(
+    fun executeRequest(
         restTemplate: RestTemplate,
         route: String,
         httpMethod: HttpMethod,
         entity: HttpEntity<*>,
-        responseType: Class<T>
-    ): Optional<T> {
-        val response: ResponseEntity<T> = restTemplate.exchange(route, httpMethod, entity, responseType)
+        responseType: Class<UserResponse>
+    ): Optional<UserResponse> {
+        val response: ResponseEntity<UserResponse> = restTemplate.exchange(route, httpMethod, entity, responseType)
         return Optional.ofNullable(response.body)
     }
 
@@ -40,4 +40,5 @@ class UserMsRestTemplate(val restTemplateConfig: RestTemplateConfig) {
         val entity = createHttpEntity(token)
         return executeRequest(restTemplateConfig.restTemplate(), route, HttpMethod.GET, entity, UserResponse::class.java)
     }
+
 }
