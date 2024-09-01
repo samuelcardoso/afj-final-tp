@@ -11,19 +11,15 @@ import java.time.LocalDateTime
 
 class CustomUserDetailsServiceImplTest {
 
-    private val DEFAULT_ROLE = "ROLE_USER"
-
     private val userRepository: UserAppRepository = mockk()
-
-    val customUserDetailsServiceImpl = CustomUserDetailsServiceImpl(userRepository)
-
+    private val customUserDetailsServiceImpl = CustomUserDetailsServiceImpl(userRepository)
 
     @Test
     fun `must load user by name`() {
         val user = UserApp(1,
                 "username",
                 "123456",
-                mutableSetOf(DEFAULT_ROLE),
+                mutableSetOf("ROLE_USER"),
                 "",
                 "User",
                 "Test",
@@ -43,7 +39,7 @@ class CustomUserDetailsServiceImplTest {
     }
 
     @Test
-    fun whenInvalidArray_thenThrowsException() {
+    fun `should throw exception when not finding user`() {
         every { userRepository.findByUsername(any()) } returns null
 
         assertThrows<UsernameNotFoundException> {
