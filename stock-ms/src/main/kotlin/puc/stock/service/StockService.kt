@@ -1,5 +1,7 @@
 package puc.stock.service
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import puc.stock.controller.response.StockResponse
 import puc.stock.controller.request.StockUpdateRequest
 
@@ -11,5 +13,5 @@ interface StockService {
 
     fun findStockByProductId(productId: String) : StockResponse
 
-    fun findStockAll() : List<StockResponse>
+    fun findStockAll(pageable: Pageable) : Page<StockResponse>
 }

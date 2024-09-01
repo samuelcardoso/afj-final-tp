@@ -1,6 +1,8 @@
 package puc.stock.service.impl
 
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import puc.stock.controller.request.StockUpdateRequest
@@ -66,12 +68,12 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
     }
 
     @Transactional
-    override fun findStockAll() : List<StockResponse> {
-        val stock = stockRepository.findAll()
+    override fun findStockAll(pageable: Pageable) : Page<StockResponse> {
+        val stockPage = stockRepository.findAll(pageable)
             ?: throw ProductNotFoundException(String.format("Erro ao buscar todos os produtos do estoque"))
 
-        logger.info("=== Produtos encontrados no estoque", stock)
-        return stock.map { it.toResponse() }
+        logger.info("=== Produtos encontrados no estoque", stockPage.content)
+        return stockPage.map { it.toResponse() }
     }
 
     private fun validateStockExistence(existingStock: Stock?, stockUpdateRequest: StockUpdateRequest) {
