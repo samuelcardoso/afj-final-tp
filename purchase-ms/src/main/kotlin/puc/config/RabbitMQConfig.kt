@@ -2,11 +2,14 @@ package puc.config
 
 import org.springframework.amqp.core.ExchangeBuilder
 import org.springframework.amqp.core.Queue
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.retry.policy.SimpleRetryPolicy
+import org.springframework.retry.support.RetryTemplate
 
 @Configuration
 class RabbitMQConfig {
@@ -33,6 +36,21 @@ class RabbitMQConfig {
     @Bean
     fun rabbitAdmin(connectionFactory: ConnectionFactory): RabbitAdmin {
         return RabbitAdmin(connectionFactory)
+    }
+
+    @Bean
+    fun simpleRabbitListenerContainerFactory(connectionFactory: ConnectionFactory): SimpleRabbitListenerContainerFactory {
+        val retryTemplate = RetryTemplate()
+        val retryPolicy = SimpleRetryPolicy(3)
+        retryTemplate.setRetryPolicy(retryPolicy)
+
+        val factory = SimpleRabbitListenerContainerFactory()
+        factory.setConnectionFactory(connectionFactory)
+        factory.setConcurrentConsumers(3)
+        factory.setMaxConcurrentConsumers(10)
+        factory.setPrefetchCount(1)
+        factory.setRetryTemplate(retryTemplate)
+        return factory
     }
 
     @Bean
