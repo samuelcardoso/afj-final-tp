@@ -17,9 +17,9 @@ class UserService(val userClient: IUserClient): IUserService {
     } */
 
 
-    override fun getLoggedUser(): User? {
+    override fun getAuthenticatedUser(): User? {
         logger.info("Retrieving authenticated user from user microservice");
-        val user = userClient.getLoggedUser().getOrNull();
+        val user = userClient.getAuthenticatedUser().getOrNull();
         logger.info("Authenticated user retrieved from user microservice: $user");
         return user;
     }

@@ -10,6 +10,6 @@ import java.util.Optional
 interface IUserClient {
 
     @GetMapping("/me")
-    fun getLoggedUser(): Optional<User>;
+    fun getAuthenticatedUser(): Optional<User>;
 
 }

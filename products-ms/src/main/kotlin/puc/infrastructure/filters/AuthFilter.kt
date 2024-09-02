@@ -2,7 +2,6 @@ package puc.infrastructure.filters
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
-import jakarta.annotation.Nullable
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -30,7 +29,7 @@ class AuthFilter(val userService: UserService, val objectMapper: ObjectMapper): 
         HeaderContext.setHeader(headerValue)
 
         try {
-            user = userService.getLoggedUser();
+            user = userService.getAuthenticatedUser();
 
             if (user != null) {
                 val roles = user.roles?.map { SimpleGrantedAuthority(it) }
