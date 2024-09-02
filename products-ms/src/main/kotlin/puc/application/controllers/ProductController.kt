@@ -77,4 +77,9 @@ class ProductController(
         return ResponseEntity.ok(mapOf("message" to "Product deleted successfully"))
     }
 
+    @PatchMapping("/{id}")
+    fun patchProduct(@PathVariable id: String, @RequestBody updates: Map<String, Any>): ResponseEntity<Any> {
+        val updatedProduct = productService.patchProduct(id, updates)
+        return ResponseEntity.ok(updatedProduct)
+    }
 }
