@@ -23,17 +23,19 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
 
     @Transactional
     override fun writeDownStock(stockUpdateRequest: StockUpdateRequest) : StockResponse {
-        val stock = this.findStockByProductId(stockUpdateRequest.productId!!).toEntity()
+        val productStock = getCurrentProductStock(stockUpdateRequest.productId!!)
 
-        if (stock.quantity < stockUpdateRequest.quantity!!) {
-            logger.error("=== Erro, produto [{}] com estoque insuficiente", stockUpdateRequest.productId)
-            throw NotEnoughStockException(String.format("Produto com id [%s] não tem estoque suficiente", stockUpdateRequest.productId))
+        if (isNotEligibleProductStock(stockUpdateRequest,productStock)) {
+            val errorMessage = "Produto com id [${stockUpdateRequest.productId}.] não tem estoque suficiente"
+            logger.error(errorMessage)
+            throw NotEnoughStockException(errorMessage)
         }
 
-        stock.quantity -= stockUpdateRequest.quantity
+        productStock.quantity -= stockUpdateRequest.quantity!!
+        logger.info("=== Quantidade do produto atualizada [{}]", productStock.quantity)
 
-        logger.info("=== Salvando atualização de estoque [{}]", stock.toString())
-        val stockUpdated = stockRepository.save(stock)
+        logger.info("=== Salvando atualização de estoque [{}]", productStock)
+        val stockUpdated = stockRepository.save(productStock)
 
         logger.info("=== Estoque atualizado com sucesso, quantidade atual [{}]", stockUpdated.quantity)
         return stockUpdated.toResponse()
@@ -72,7 +74,7 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
         val stockPage = stockRepository.findAll(pageable)
             ?: throw ProductNotFoundException(String.format("Erro ao buscar todos os produtos do estoque"))
 
-        logger.info("=== Produtos encontrados no estoque", stockPage.content)
+        logger.info("=== Produtos encontrados no estoque [{}] ", stockPage.content)
         return stockPage.map { it.toResponse() }
     }
 
@@ -81,5 +83,13 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
             logger.error("=== Erro, o produto [{}] já existe no estoque", stockUpdateRequest.productId)
             throw ProductAlreadyExistsException(String.format("Estoque do produto com id [%s] já está cadastrado", stockUpdateRequest.productId))
         }
+    }
+
+    private fun getCurrentProductStock(productId: String) : Stock  {
+        return this.findStockByProductId(productId).toEntity()
+    }
+    private fun isNotEligibleProductStock(stockUpdateRequest: StockUpdateRequest, productStock: Stock): Boolean {
+        logger.info("=== [isNotEligibleProductStock] Id do produto: [{}]  Quantidade disponivel [{}]. Quantidade Solicitada [{}]", productStock.productId, productStock.quantity, stockUpdateRequest.quantity)
+        return productStock.quantity < stockUpdateRequest.quantity!!
     }
 }
