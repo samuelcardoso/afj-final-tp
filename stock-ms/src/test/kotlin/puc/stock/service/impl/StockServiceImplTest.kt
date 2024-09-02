@@ -9,8 +9,13 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import puc.stock.controller.request.StockUpdateRequest
+import puc.stock.controller.response.StockResponse
 import puc.stock.exception.NotEnoughStockException
 import puc.stock.exception.ProductAlreadyExistsException
 import puc.stock.exception.ProductNotFoundException
@@ -125,5 +130,57 @@ class StockServiceImplTest {
 
         assertEquals("Produto com id [1] não encontrado na base de estoques", exception.message)
         verify { stockRepository.findByProductId("1") }
+    }
+
+    @Test
+    fun `should return paginated stock when repository returns data`() {
+        val mockPageable = mockk<Pageable>()
+        val expectedPage = Page.empty<Stock>()
+
+        every { stockRepository.findAll(mockPageable) } returns expectedPage
+
+        val stockPage = stockService.findStockAll(mockPageable)
+
+        assertNotNull(stockPage)
+        assertEquals(expectedPage, stockPage)
+        verify { stockRepository.findAll(mockPageable) }
+    }
+
+    @Test
+    fun `should throw ProductNotFoundException when repository returns null`() {
+        val mockPageable = mockk<Pageable>()
+
+        every { stockRepository.findAll(mockPageable) } returns null
+
+        var exception = assertThrows(ProductNotFoundException::class.java) {
+            stockService.findStockAll(mockPageable)
+        }
+
+        assertEquals("Erro ao buscar todos os produtos do estoque", exception.message)
+        verify { stockRepository.findAll(mockPageable) }
+    }
+
+    @Test
+    fun `should map returned Stock objects to StockResponse`() {
+        val mockPageable = mockk<Pageable>()
+        val mockStock1 = mockk<Stock>()
+        val mockStock2 = mockk<Stock>()
+        val expectedStockResponse1 = mockk<StockResponse>()
+        val expectedStockResponse2 = mockk<StockResponse>()
+
+        val content = listOf(mockStock1, mockStock2)
+        val pageable = PageRequest.of(0, 2)
+        val totalElements = 10L
+        val expectedPage = PageImpl(content, pageable, totalElements)
+
+        every { stockRepository.findAll(mockPageable) } returns expectedPage
+        every { mockStock1.toResponse() } returns expectedStockResponse1
+        every { mockStock2.toResponse() } returns expectedStockResponse2
+
+        stockService.findStockAll(mockPageable)
+
+        assertEquals(2, content.size)
+        verify { mockStock1.toResponse() }
+        verify { mockStock2.toResponse() }
     }
 }
