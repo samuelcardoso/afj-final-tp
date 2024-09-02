@@ -3,6 +3,8 @@ package puc.stock.controller
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -45,9 +47,12 @@ class StockController(val stockService: StockService) {
 
     @GetMapping("/product")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Busca todos produtos do estoque")
-    fun getStockAll() : ResponseEntity<List<StockResponse>> {
-        logger.info("=== Buscando estoque de todos os produtos")
-        return ResponseEntity.ok(stockService.findStockAll())
+    @Operation(summary = "Busca todos produtos do estoque paginados")  // Update summary
+    fun getStockAll(pageable: Pageable): ResponseEntity<Page<StockResponse>> {
+        logger.info("=== Buscando estoque de todos os produtos paginados")
+
+        val stockPage = stockService.findStockAll(pageable)
+
+        return ResponseEntity.ok(stockPage)
     }
 }
