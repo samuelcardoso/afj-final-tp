@@ -1,5 +1,6 @@
 package puc.service
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -9,9 +10,12 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import puc.exception.custom.InvalidCredentialsException
+import puc.exception.custom.UserNotFoundException
 import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.UserResponse
+import puc.model.enum.RoleEnum
 import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
 import puc.service.impl.UserAppServiceImpl
@@ -46,8 +50,8 @@ class UserAppServiceImplTest {
 
         user = UserApp(1,
                 "username",
-                "123456",
-                mutableSetOf("ROLE_USER"),
+                "\$2a\$10\$ApGjP21HNxzEzHpZY3iwg.eZSsgWtPFuL5NR32z/1W9pMcVVSz5Ym",
+                mutableSetOf(RoleEnum.ROLE_USER.toString()),
                 "",
                 "User",
                 "Test",
@@ -62,7 +66,7 @@ class UserAppServiceImplTest {
         val user = UserMapperUtil.toUserApp(UserResponse(
                 1,
                 request.username,
-                setOf("ROLE_USER"),
+                setOf(RoleEnum.ROLE_USER.toString()),
                 request.document,
                 request.email,
                 request.firstName,
@@ -85,12 +89,77 @@ class UserAppServiceImplTest {
     }
 
     @Test
-    fun `should throw exception when not finding user`() {
+    fun `should throw exception for already existing user`() {
         Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
 
         assertThrows<UsernameAlreadyExistsException> {
             userAppServiceImpl.register(request)
         }
+    }
+
+    @Test
+    fun `should throw exception when not finding user to login`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(null)
+
+        assertThrows<UserNotFoundException> {
+            userAppServiceImpl.login("username", "123456")
+        }
+    }
+
+    @Test
+    fun `should throw exception for invalid password`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
+
+        assertThrows<InvalidCredentialsException> {
+            userAppServiceImpl.login("username", "abc")
+        }
+    }
+
+    @Test
+    fun `must complete login successfully`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
+        Mockito.`when`(jwtUtil.generateToken(any(), any())).thenReturn("TOKEN_TEST")
+        Mockito.`when`(jwtUtil.generateRefreshToken(any(), any())).thenReturn("REFRESH_TOKEN_TEST")
+        Mockito.`when`(jwtUtil.getExpirationTime(any())).thenReturn(123)
+
+        val loginResponse = userAppServiceImpl.login("username", "123456")
+
+        assertEquals(loginResponse.user.id, user.id)
+        assertEquals(loginResponse.user.roles.elementAt(0), user.roles.elementAt(0))
+        assertEquals(loginResponse.user.username, user.username)
+        assertEquals(loginResponse.user.email, user.email)
+        assertEquals(loginResponse.user.phone, user.phone)
+        assertEquals(loginResponse.user.document, user.document)
+        assertEquals(loginResponse.user.firstName, user.firstName)
+        assertEquals(loginResponse.user.lastName, user.lastName)
+        assertEquals(loginResponse.token, "TOKEN_TEST")
+        assertEquals(loginResponse.refreshToken, "REFRESH_TOKEN_TEST")
+        assertEquals(loginResponse.tokenExpiresIn, 123)
+        assertEquals(loginResponse.tokenType, "Bearer")
+    }
+
+    @Test
+    fun `should throw exception when not finding user to get info`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(null)
+
+        assertThrows<UserNotFoundException> {
+            userAppServiceImpl.getUserInfo("username")
+        }
+    }
+
+    @Test
+    fun `should return user information`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
+
+        val userResponse = userAppServiceImpl.getUserInfo("username")
+
+        assertEquals(userResponse.phone, user.phone)
+        assertEquals(userResponse.roles.elementAt(0), user.roles.elementAt(0))
+        assertEquals(userResponse.email, user.email)
+        assertEquals(userResponse.username, user.username)
+        assertEquals(userResponse.document, user.document)
+        assertEquals(userResponse.firstName, user.firstName)
+        assertEquals(userResponse.lastName, user.lastName)
     }
 
 }

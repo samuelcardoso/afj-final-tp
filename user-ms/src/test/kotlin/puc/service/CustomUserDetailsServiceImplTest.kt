@@ -10,6 +10,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import puc.model.enum.RoleEnum
 import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
 import java.time.LocalDateTime
@@ -30,7 +31,7 @@ class CustomUserDetailsServiceImplTest {
         user = UserApp(1,
                 "username",
                 "123456",
-                mutableSetOf("ROLE_USER"),
+                mutableSetOf(RoleEnum.ROLE_USER.toString()),
                 "",
                 "User",
                 "Test",
