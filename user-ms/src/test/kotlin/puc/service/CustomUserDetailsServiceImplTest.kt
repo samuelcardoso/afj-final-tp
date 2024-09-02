@@ -1,22 +1,33 @@
 package puc.service.impl
 
-import io.mockk.every
-import io.mockk.mockk
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
 import java.time.LocalDateTime
 
+@ExtendWith(MockitoExtension::class)
 class CustomUserDetailsServiceImplTest {
 
-    private val userRepository: UserAppRepository = mockk()
-    private val customUserDetailsServiceImpl = CustomUserDetailsServiceImpl(userRepository)
+    @Mock
+    private lateinit var userRepository: UserAppRepository
 
-    @Test
-    fun `must load user by name`() {
-        val user = UserApp(1,
+    @InjectMocks
+    private lateinit var customUserDetailsServiceImpl: CustomUserDetailsServiceImpl
+
+    private lateinit var user: UserApp
+
+    @BeforeEach
+    fun setUp() {
+        user = UserApp(1,
                 "username",
                 "123456",
                 mutableSetOf("ROLE_USER"),
@@ -27,8 +38,11 @@ class CustomUserDetailsServiceImplTest {
                 "859999999",
                 LocalDateTime.now(),
                 null)
+    }
 
-        every { userRepository.findByUsername(any()) } returns user
+    @Test
+    fun `must load user by name`() {
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
 
         val userDatail = customUserDetailsServiceImpl.loadUserByUsername("username")
 
@@ -40,7 +54,7 @@ class CustomUserDetailsServiceImplTest {
 
     @Test
     fun `should throw exception when not finding user`() {
-        every { userRepository.findByUsername(any()) } returns null
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(null)
 
         assertThrows<UsernameNotFoundException> {
             customUserDetailsServiceImpl.loadUserByUsername("username")

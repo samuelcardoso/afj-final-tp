@@ -1,36 +1,61 @@
 package puc.service
 
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import puc.exception.custom.UsernameAlreadyExistsException
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.response.UserResponse
 import puc.model.sql.UserApp
 import puc.repository.UserAppRepository
-import puc.service.impl.CustomUserDetailsServiceImpl
 import puc.service.impl.UserAppServiceImpl
 import puc.util.JwtUtil
 import puc.util.UserMapperUtil
 import java.time.LocalDateTime
 
+@ExtendWith(MockitoExtension::class)
 class UserAppServiceImplTest {
 
-    private val jwtUtil: JwtUtil = mockk()
-    private val userRepository: UserAppRepository = mockk()
-    private val userAppServiceImpl = UserAppServiceImpl(userRepository, jwtUtil)
-    private val passwordEncoder = BCryptPasswordEncoder()
-    private val request = RegisterRequest("Username",
-            "123456",
-            "User",
-            "Test",
-            "test@email.com",
-            "85999999999",
-            "12345678912")
+    @Mock
+    private lateinit var jwtUtil: JwtUtil
+
+    @Mock
+    private lateinit var userRepository: UserAppRepository
+
+    @InjectMocks
+    private lateinit var userAppServiceImpl: UserAppServiceImpl
+
+    private lateinit var request: RegisterRequest
+    private lateinit var user: UserApp
+
+    @BeforeEach
+    fun setUp() {
+        request = RegisterRequest("Username",
+                "123456",
+                "User",
+                "Test",
+                "test@email.com",
+                "85999999999",
+                "12345678912")
+
+        user = UserApp(1,
+                "username",
+                "123456",
+                mutableSetOf("ROLE_USER"),
+                "",
+                "User",
+                "Test",
+                "test@email.com",
+                "859999999",
+                LocalDateTime.now(),
+                null)
+    }
 
     @Test
     fun `must register new user`() {
@@ -45,8 +70,8 @@ class UserAppServiceImplTest {
                 request.phone)
         )
 
-        every { userRepository.save(any()) } returns user
-        every { userRepository.findByUsername(any()) } returns null
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(null)
+        Mockito.`when`(userRepository.save(any())).thenReturn(user)
 
         val userResponse = userAppServiceImpl.register(request)
 
@@ -61,19 +86,7 @@ class UserAppServiceImplTest {
 
     @Test
     fun `should throw exception when not finding user`() {
-        val user = UserApp(1,
-                "username",
-                "123456",
-                mutableSetOf("ROLE_USER"),
-                "",
-                "User",
-                "Test",
-                "test@email.com",
-                "859999999",
-                LocalDateTime.now(),
-                null)
-
-        every { userRepository.findByUsername(any()) } returns user
+        Mockito.`when`(userRepository.findByUsername(any())).thenReturn(user)
 
         assertThrows<UsernameAlreadyExistsException> {
             userAppServiceImpl.register(request)
