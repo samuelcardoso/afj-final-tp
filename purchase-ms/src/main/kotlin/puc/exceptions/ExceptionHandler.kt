@@ -2,7 +2,6 @@ package puc.exceptions
 
 import ErrorResponse
 import jakarta.servlet.http.HttpServletRequest
-import java.time.LocalDateTime
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
