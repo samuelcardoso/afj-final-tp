@@ -11,14 +11,16 @@ import puc.application.dtos.PaginationMetaDTO
 import puc.domain.products.model.Product
 import puc.infrastructure.repositories.ProductRepository
 import puc.infrastructure.entities.ProductEntity
-import puc.domain.mappers.ProductMapper
+import puc.domain.products.mappers.ProductMapper
 import puc.application.controllers.ProductController
-import kotlin.jvm.optionals.getOrNull
+import puc.domain.products.services.exceptions.ProductNotFoundException
 
 @Service
-class ProductService(val productRepository: ProductRepository) : IProductService{
-    val logger = LoggerFactory.getLogger(this.javaClass)!!
+class ProductService(
+    val productRepository: ProductRepository
+) : IProductService{
 
+    val logger = LoggerFactory.getLogger(this.javaClass)!!
 
     override fun findAll(filterParams: FilterProductParamsDTO): PaginatedResponseDTO<Product> {
         val totalPages = getTotalPages(filterParams.pageSize)
@@ -27,10 +29,7 @@ class ProductService(val productRepository: ProductRepository) : IProductService
 
         val pageable = PageRequest.of(filterParams.page.minus(1), filterParams.pageSize)
         val pagedProducts = productRepository.findAll(pageable)
-
         val filteredProducts = findAllFilters(filterParams, pagedProducts.content)
-
-
         val resultProducts = filteredProducts.map { ProductMapper.entityToDomain(it) }
 
         linkToProductController(resultProducts)
@@ -47,12 +46,13 @@ class ProductService(val productRepository: ProductRepository) : IProductService
     }
 
     @Cacheable(value = ["products"], key = "#id")
-    override fun findById(id: String): Product? {
+    override fun findById(id: String): Product {
         logger.info("Getting product by id ${id}")
 
-        val result = productRepository.findById(id).getOrNull()
+        val result = productRepository.findById(id)
+            .orElseThrow { ProductNotFoundException("Product with ID $id not found") }
 
-        return if (result != null) ProductMapper.entityToDomain(result) else null;
+        return ProductMapper.entityToDomain(result)
     }
 
     override fun save(product: Product): Product {
@@ -82,19 +82,18 @@ class ProductService(val productRepository: ProductRepository) : IProductService
     }
 
     override fun delete(productId: String) {
-        productRepository.deleteById(productId)
-    }
+        if (!productRepository.existsById(productId)) {
+            throw ProductNotFoundException("Product with ID $productId not found")
+        }
 
-    override fun update() {
-        TODO("Not yet implemented")
+        productRepository.deleteById(productId)
+        logger.info("The product ${productId} was successfully deleted")
     }
 
     private fun getTotalPages(pageSize: Int): Int {
         val totalElements = productRepository.count()
         return ((totalElements / pageSize) + if (totalElements % pageSize > 0) 1 else 0).toInt()
     }
-
-
 
     private fun findAllFilters(requestParam: FilterProductParamsDTO?, allProducts: MutableList<ProductEntity>) : List<ProductEntity> =
         allProducts.asSequence().filter { product ->

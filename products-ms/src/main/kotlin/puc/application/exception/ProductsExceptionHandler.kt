@@ -6,6 +6,7 @@ import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import puc.domain.products.services.exceptions.ProductNotFoundException
 import software.amazon.awssdk.services.acm.model.ResourceNotFoundException
 import java.time.LocalDate
 
@@ -20,6 +21,15 @@ class ProductsExceptionHandler: ResponseEntityExceptionHandler() {
     fun handleIllegalArgumentException(e: IllegalArgumentException): ProblemDetail {
         val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.PRECONDITION_FAILED, e.localizedMessage)
         problemDetail.title = "Fill the fields correctly"
+        problemDetail.detail = "${e.message}"
+        problemDetail.setProperty("timestamp", LocalDate.now())
+        return problemDetail
+    }
+
+    @ExceptionHandler(ProductNotFoundException::class)
+    fun handleProductNotFoundException(e: ProductNotFoundException): ProblemDetail {
+        val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.localizedMessage)
+        problemDetail.title = "Product not found"
         problemDetail.detail = "${e.message}"
         problemDetail.setProperty("timestamp", LocalDate.now())
         return problemDetail
