@@ -13,27 +13,35 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import java.net.URI
 import java.util.*
 
+val LOCAL_ACCESS_KEY = UUID.randomUUID().toString()
+val LOCAL_SECRET_ACCESS_KEY=UUID.randomUUID().toString()
+
 @Configuration
 class SecretsManagerLocalConfig(
     @Value("\${aws.secrets-manager.route}")
-    private val route: String
+    private val route: String,
 ) : SecretsManagerClient {
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
-    val client = SecretsManagerClient
-        .builder()
-        .httpClientBuilder(ApacheHttpClient.builder())
-        .region(Region.US_EAST_1)
-        .endpointOverride(URI(route))
-        .credentialsProvider(
-            StaticCredentialsProvider.create(
-                AwsBasicCredentials.create(UUID.randomUUID().toString(), UUID.randomUUID().toString())
-            )
-        ).overrideConfiguration(ClientOverrideConfiguration.builder().build())
-        .build()
+    val client: SecretsManagerClient = kotlin.runCatching {
+        SecretsManagerClient
+            .builder()
+            .httpClientBuilder(ApacheHttpClient.builder())
+            .region(Region.US_EAST_1)
+            .endpointOverride(URI(route))
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(LOCAL_ACCESS_KEY, LOCAL_SECRET_ACCESS_KEY)
+                )
+            ).overrideConfiguration(ClientOverrideConfiguration.builder().build())
+            .build()
+    }.getOrElse {
+        logger.error("Seems like your environment is not properly configured. Make sure to fix it.", it)
+        throw it
+    }
 
-    fun takeSecret(secretId: String): String? {
+    fun takeSecret(secretId: String): String {
 
         return runCatching {
             client
@@ -46,7 +54,7 @@ class SecretsManagerLocalConfig(
                 .secretString()
         }.getOrElse {
             logger.error("It was not possible to take the secret under the id: $secretId", it)
-            null
+            throw it
         }
     }
 
