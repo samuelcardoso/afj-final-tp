@@ -1,15 +1,20 @@
-package puc.purchase
+package puc.controller
 
 import org.springframework.amqp.AmqpException
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestBody
 import com.fasterxml.jackson.core.JsonProcessingException
 import puc.gateway.UserMsRestTemplate
 import puc.model.PurchaseRequest
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import puc.service.PurchaseService
 import jakarta.validation.Valid
+import kotlinx.serialization.encodeToString
 import puc.vo.JWT
 
 @Serializable
