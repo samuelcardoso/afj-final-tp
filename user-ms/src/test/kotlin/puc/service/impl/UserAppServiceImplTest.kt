@@ -10,7 +10,12 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import puc.exception.custom.*
+import puc.exception.custom.UsernameAlreadyExistsException
+import puc.exception.custom.UserNotFoundException
+import puc.exception.custom.InvalidCredentialsException
+import puc.exception.custom.InvalidRoleException
+import puc.exception.custom.UserEmailAlreadyExistsException
+import puc.exception.custom.UserDocumentAlreadyExistsException
 import puc.model.dto.request.ChangePasswordRequest
 import puc.model.dto.request.RegisterRequest
 import puc.model.dto.request.UpdateUserRequest
@@ -21,7 +26,7 @@ import puc.repository.UserAppRepository
 import puc.util.JwtUtil
 import puc.util.UserMapperUtil
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class UserAppServiceImplTest {
