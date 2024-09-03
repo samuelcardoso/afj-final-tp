@@ -24,7 +24,6 @@ class ProductController(
 ) {
 
     @GetMapping
-    @RolesAllowed("USER")
     fun getAllProducts(
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) category: String?,
@@ -46,7 +45,6 @@ class ProductController(
     }
 
     @GetMapping("/{id}")
-    @RolesAllowed("USER")
     fun getById(@PathVariable id: String): ResponseEntity<Any> {
         val product = productService.findById(id)
         return ResponseEntity.ok(mapOf("product" to product))
@@ -68,6 +66,7 @@ class ProductController(
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed("USER")
     fun putProduct( @PathVariable id: String,
                     @RequestBody productDTO: ProductDTO,
                     uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{

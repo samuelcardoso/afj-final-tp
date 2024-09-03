@@ -1,4 +1,4 @@
-package puc.application.consumers
+package puc.application._shared
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
