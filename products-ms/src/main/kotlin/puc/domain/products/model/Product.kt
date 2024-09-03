@@ -28,7 +28,7 @@ data class Product(
         require(!weight.isNaN()) { "Weight must be a nan" }
         require(measure.isNotBlank()) { "Measure must not be blank" }
         require(color.isNotBlank()) { "Color must not be blank" }
-        // require(category != Category.UNKNOWN) { "Category must not be blank" }
+        require(category != Category.UNKNOWN) { "Category must not be blank" }
         require(brand.isNotBlank()) { "Brand must not be blank" }
     }
 }
