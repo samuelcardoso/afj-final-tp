@@ -18,7 +18,7 @@ object ProductMapper {
             image = entity.image,
             weight = entity.weight,
             description = entity.description,
-            category =  Category.fromValue(entity.category),
+            category =  Category.getCategoryByName(entity.category),
             measure = entity.measure,
         )
     }
@@ -45,7 +45,7 @@ object ProductMapper {
         productEntity.image = product.image
         productEntity.weight = product.weight
         productEntity.description = product.description
-        productEntity.category =  product.category.description
+        productEntity.category =  product.category.name
         productEntity.measure = product.measure
     }
 }

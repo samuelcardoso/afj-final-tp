@@ -31,7 +31,9 @@ class ProductService(
         val pageable = PageRequest.of(filterParams.page.minus(1), filterParams.pageSize)
         val pagedProducts = productRepository.findAll(pageable)
         val filteredProducts = findAllFilters(filterParams, pagedProducts.content)
-        val resultProducts = filteredProducts.map { ProductMapper.entityToDomain(it) }
+        val resultProducts = filteredProducts.map {
+            ProductMapper.entityToDomain(it)
+        }
 
         linkToProductController(resultProducts)
 
@@ -133,7 +135,7 @@ class ProductService(
                         val categoryDescription = value as? String
                         val category = Category.getCategoryByName(categoryDescription ?: "")
                         if (category != Category.UNKNOWN) {
-                            productDb.category = category.description
+                            productDb.category = category.name
                         }
                     }
                     "brand" -> productDb.brand = value as? String ?: productDb.brand

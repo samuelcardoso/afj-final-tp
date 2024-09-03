@@ -29,7 +29,7 @@ data class ProductEntity(
         weight=product.weight,
         measure=product.measure,
         color=product.color,
-        category= product.category.description,
+        category= product.category.name,
         brand=product.brand
     )
 }
