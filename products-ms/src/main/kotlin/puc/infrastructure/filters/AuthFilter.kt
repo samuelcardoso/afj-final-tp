@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import puc.domain.users.model.User
 import puc.domain.users.services.UserService
-import puc.infrastructure.config.HeaderContext
+import puc.infrastructure.configs.HeaderContext
 import java.time.LocalDate
 
 @Component

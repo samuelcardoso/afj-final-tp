@@ -1,4 +1,4 @@
-package puc.infrastructure.config
+package puc.infrastructure.configs
 
 import feign.RequestInterceptor
 import feign.Retryer

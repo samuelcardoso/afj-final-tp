@@ -1,4 +1,4 @@
-package puc.infrastructure.config
+package puc.infrastructure.configs
 
 object HeaderContext {
     private val currentHeader = ThreadLocal<String>()
