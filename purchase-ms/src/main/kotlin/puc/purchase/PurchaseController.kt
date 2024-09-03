@@ -10,6 +10,8 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import puc.service.PurchaseService
 import jakarta.validation.Valid
+import puc.exceptions.ErrorTryingSoSendMessageMQException
+import puc.exceptions.ErrorTryingToProcessJSONException
 import puc.vo.JWT
 
 @Serializable
@@ -28,13 +30,13 @@ class PurchaseController(
             val jwt = JWT.create(token, userMsRestTemplate);
             purchaseService.sendMessage(purchaseRequest, jwt.id)
         }catch (e: AmqpException) {
-            return ResponseEntity.internalServerError().body("Failed to send message to MQ");
+            throw ErrorTryingSoSendMessageMQException("Failed to send message to MQ");
         } catch (e: JsonProcessingException) {
-            return ResponseEntity.internalServerError().body("Failed to process json");
+            throw ErrorTryingToProcessJSONException("Failed to process json");
         } catch (e: RuntimeException) {
             val errorMsg = e.message
             if(errorMsg == null){
-                return ResponseEntity.internalServerError().body("Body of error is empty");
+                throw ErrorTryingSoSendMessageMQException("Body of error is empty");
             }
             val jsonStartIndex = errorMsg.indexOf('{')
             val jsonEndIndex = errorMsg.indexOf('}', jsonStartIndex)
