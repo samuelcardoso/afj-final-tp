@@ -15,7 +15,7 @@ class PurchaseService(val purchaseRepository: PurchaseAppRepository, val jwtUtil
         try {
             return purchaseRepository.save(purchase)
         } catch (ex: HttpClientErrorException) {
-            throw Exception("Couldn't save purchase!")
+            throw Exception("Couldn't save purchase!!")
         }
 
     }
