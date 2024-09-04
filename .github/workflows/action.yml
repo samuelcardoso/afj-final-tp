@@ -28,7 +28,8 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: Build with Gradle
       run: | 
-            cd user-ms 
+            cd user-ms/
+            ls
             ./gradlew build
 
     - name: Run tests and generate coverage report
