@@ -6,4 +6,5 @@ gradle/
 gradlew
 gradlew.bat
 target_db/
+out/
 bin/
