@@ -1,4 +1,4 @@
-name: Java CI with Gradle and JaCoCo
+name: USER-MS CI
 
 on:
   push:
