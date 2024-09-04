@@ -34,23 +34,10 @@ class PurchaseController(
         try {
             val jwt = JWT.create(token, userMsRestTemplate);
             purchaseService.sendMessage(purchaseRequest, jwt.id)
-        }catch (e: AmqpException) {
+        } catch (e: AmqpException) {
             throw ErrorTryingSoSendMessageMQException("Failed to send message to MQ");
         } catch (e: JsonProcessingException) {
             throw ErrorTryingToProcessJSONException("Failed to process json");
-        } catch (e: RuntimeException) {
-            val errorMsg = e.message
-            if(errorMsg == null){
-                throw ErrorTryingSoSendMessageMQException("Body of error is empty");
-            }
-            val jsonStartIndex = errorMsg.indexOf('{')
-            val jsonEndIndex = errorMsg.indexOf('}', jsonStartIndex)
-
-            val jsonString = errorMsg.substring(jsonStartIndex..jsonEndIndex)
-
-            val errorJson = Json.decodeFromString<ErrorGateway>(jsonString)
-            val errorResponseJson = Json.encodeToString(errorJson)
-            return ResponseEntity.status(errorJson.status).body(errorResponseJson);
         }
 
         return ResponseEntity.ok("Purchase request sent.") }
