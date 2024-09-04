@@ -17,6 +17,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      working-directory: ./user-ms
 
     - name: Set up JDK
       uses: actions/setup-java@v3
@@ -26,12 +27,6 @@ jobs:
 
     - name: Set up Gradle
       uses: gradle/gradle-build-action@v2
-
-    - name: Command CD 
-      run: ls
-   
-    - name: Command CD 
-      run: cd user-ms/src/
 
     - name: Command CD 
       run: ls
