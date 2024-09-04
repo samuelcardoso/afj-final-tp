@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -26,15 +26,10 @@ jobs:
 
     - name: Set up Gradle
       uses: gradle/gradle-build-action@v2
-
-    - name: Command CD 
-      run: cd user-ms
-
-    - name: Command CD 
-      run: ls
-      
     - name: Build with Gradle
-      run: gradlew build
+      run: | 
+            cd user-ms 
+            ./gradlew build
 
     - name: Run tests and generate coverage report
       run: ./gradlew test jacocoTestReport
