@@ -32,9 +32,12 @@ jobs:
    
     - name: Command CD 
       run: cd ./user-ms
+
+    - name: Command CD 
+      run: ls
       
     - name: Build with Gradle
-      run: ./gradlew build
+      run: gradlew build
 
     - name: Run tests and generate coverage report
       run: ./gradlew test jacocoTestReport
