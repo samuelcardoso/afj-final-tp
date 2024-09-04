@@ -41,7 +41,7 @@ class PurchaseConsumer(
             val requestEntity = HttpEntity<StockRequest>(null, httpHeaders);
             val response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Stock::class.java)
 
-            // Deserializa a string JSON em um objeto
+            logger.info("Deserializa a string JSON em um objeto")
             val stockObj = (ObjectMapper()).writeValueAsBytes(response.getBody())
             val stock = (ObjectMapper()).readValue(stockObj, Stock::class.java)
 
@@ -49,14 +49,12 @@ class PurchaseConsumer(
                 Purchase(null, it.productId)
             }
 
-            // Lógica para salvar a compra no banco de dados pode ser adicionada aqui
+            logger.info("Salvando no banco de dados")
             purchaseService.save(purchase)
             logger.info("Baixa no estoque realizada para o produto: ${purchaseMessage.productId}")
 
         } catch (e: Exception) {
-
             throw InsufficientStockException("Insufficient stock ${e.message}")
-
         }
     }
 }
