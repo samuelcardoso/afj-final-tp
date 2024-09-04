@@ -1,0 +1,40 @@
+name: Java CI with Gradle and JaCoCo
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [ '22' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Run tests and generate coverage report
+      run: ./gradlew test jacocoTestReport
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: build/reports/jacoco/test/html
