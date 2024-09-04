@@ -16,7 +16,8 @@ data class Product(
     val color:String,
     val category: Category,
     val brand:String,
-    val dataRegister: LocalDateTime? = null
+    val dataRegister: LocalDateTime? = null,
+    var username: String? = null
 ) : Serializable, RepresentationModel<Product>(){
     init {
         require(name.isNotBlank()) { "Name must not be blank" }

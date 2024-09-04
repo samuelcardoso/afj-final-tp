@@ -7,3 +7,4 @@ gradlew
 gradlew.bat
 target_db/
 out/
+products-ms/prometheus/prometheus_data

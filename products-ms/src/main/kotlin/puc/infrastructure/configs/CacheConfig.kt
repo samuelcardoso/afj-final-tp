@@ -1,4 +1,4 @@
-package puc.infrastructure.redis
+package puc.infrastructure.configs
 
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
