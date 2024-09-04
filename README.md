@@ -1,3 +1,4 @@
+[![USER-MS CI](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml/badge.svg)](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml)
 # TP Final AFJ (Sistema Ecommerce em Java)
 
 Este é um monorepo para um sistema de ecommerce, contendo os seguintes domínios:
@@ -26,6 +27,12 @@ Este é um monorepo para um sistema de ecommerce, contendo os seguintes domínio
 > purchase-ms
 
 > stock-ms
+Alunos:
+Bruno Silveira Cerqueira Lima - 208435
+Emanuel Borges da Silva - 208978
+Isaac de Sousa Lima Azevedo - 213692
+Maxel Udson Alves da Conceição - 207144
+Vinícius de Oliveira Baldenebro - 210157
 
 > user-ms
 ```
@@ -82,3 +89,13 @@ Este é um monorepo para um sistema de ecommerce, contendo os seguintes domínio
   - URL: [http://localhost:15672](http://localhost:15672)
   - Usuário: `guest`
   - Senha: `guest`
+
+---
+## Grupo - Contexto 3: purchase-ms (message producer)
+
+### Integrantes
+
+* 207854 - Irla Paula Andrade Amaral
+* 212017 - Jose Carlos Macedo Lacerda
+* 208178 - Jose Carlos Pereira Silva Filho
+* 207042 - Ryan Souza Camargos de Oliveira
