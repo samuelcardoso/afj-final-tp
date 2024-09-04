@@ -31,13 +31,16 @@ jobs:
       run: ls
    
     - name: Command CD 
-      run: cd user-ms
+      run: cd user-ms/src/
+
+    - name: Command CD 
+      run: ls
       
     - name: Build with Gradle
-      run: ./src/gradlew build
+      run: ./gradlew build
 
     - name: Run tests and generate coverage report
-      run: ./src/gradlew test jacocoTestReport
+      run: ./gradlew test jacocoTestReport
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v3
