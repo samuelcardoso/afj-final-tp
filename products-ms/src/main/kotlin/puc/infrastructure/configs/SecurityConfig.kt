@@ -23,8 +23,7 @@ class SecurityConfig() {
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers(HttpMethod.GET, "/products").permitAll()
-
+                it.anyRequest().permitAll()
             }
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter::class.java)
 
