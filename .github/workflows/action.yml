@@ -25,7 +25,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up Gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v4
       with:
         gradle-version: 8.5
     
@@ -33,7 +33,8 @@ jobs:
       run: gradle --version
 
     - name: Build with Gradle
-      run: | 
+      run: |  
+            ls
             cd user-ms/
             ls
             gradle wrapper
