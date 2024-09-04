@@ -11,4 +11,5 @@ interface IProductService {
     fun save(product: Product, user: User?): Product
     fun update(product: Product, id: String): Product?
     fun delete(productId:String)
+    fun patchProduct(id: String, updates: Map<String, Any>): Product
 }

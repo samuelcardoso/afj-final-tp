@@ -1,6 +1,7 @@
 package puc.application.controllers
 
 import jakarta.annotation.security.RolesAllowed
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -24,14 +25,13 @@ class ProductController(
 ) {
 
     @GetMapping
+    @Operation(summary = "List all products", description = "Returns a list of all available products")
     fun getAllProducts(
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) category: String?,
         @RequestParam(required = false) page: Int?,
-        @RequestParam(required = false) pageSize: Int?,
-
-        ): ResponseEntity<PaginatedResponseDTO<Product>> {
-
+        @RequestParam(required = false) pageSize: Int?
+    ): ResponseEntity<PaginatedResponseDTO<Product>> {
         val param = FilterProductParamsDTO(
             name = name,
             category = category,
@@ -45,13 +45,17 @@ class ProductController(
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): ResponseEntity<Any> {
+    @Operation(summary = "Search for product by ID", description = "Returns a product by its ID")
+    fun getById(
+        @PathVariable id: String
+    ): ResponseEntity<Any> {
         val product = productService.findById(id)
         return ResponseEntity.ok(mapOf("product" to product))
     }
 
     @PostMapping
     @RolesAllowed("USER")
+    @Operation(summary = "Create a new product", description = "Creates a new product and returns the created product")
     fun postProduct(@RequestBody productDTO: ProductDTO,
                     @AuthenticationPrincipal user: User,
                     uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
@@ -67,9 +71,11 @@ class ProductController(
 
     @PutMapping("/{id}")
     @RolesAllowed("USER")
+    @Operation(summary = "Update an existing product", description = "Updates a product by its ID and returns the updated product")
     fun putProduct( @PathVariable id: String,
                     @RequestBody productDTO: ProductDTO,
-                    uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<Any>{
+                    uriComponentsBuilder: UriComponentsBuilder
+    ): ResponseEntity<Any>{
         val result =  productService.update(ProductMapper.dtoToDomain(productDTO), id)
         val location = uriComponentsBuilder
             .path("/products/{id}")
@@ -80,10 +86,18 @@ class ProductController(
 
     @DeleteMapping("/{idProduct}")
     @RolesAllowed("USER")
+    @Operation(summary = "Delete a product", description = "Remove a product by its ID")
     fun deleteProduct(@PathVariable idProduct:String) : ResponseEntity<Any>{
         productService.delete(idProduct)
         productEventPublisher.publishProductDeletedEvent(idProduct)
         return ResponseEntity.ok(mapOf("message" to "Product deleted successfully"))
     }
 
+    @PatchMapping("/{id}")
+    @RolesAllowed("USER")
+    @Operation(summary = "Patch an existing product", description = "Update any product attribute and returns the updated product")
+    fun patchProduct(@PathVariable id: String, @RequestBody updates: Map<String, Any>): ResponseEntity<Any> {
+        val updatedProduct = productService.patchProduct(id, updates)
+        return ResponseEntity.ok(updatedProduct)
+    }
 }
