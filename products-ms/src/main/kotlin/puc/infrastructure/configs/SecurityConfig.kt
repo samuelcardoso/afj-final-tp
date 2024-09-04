@@ -2,6 +2,7 @@ package puc.infrastructure.configs
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -21,7 +22,10 @@ class SecurityConfig() {
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { it.anyRequest().authenticated() }
+            .authorizeHttpRequests {
+                it.requestMatchers(HttpMethod.GET, "/products").permitAll()
+
+            }
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()

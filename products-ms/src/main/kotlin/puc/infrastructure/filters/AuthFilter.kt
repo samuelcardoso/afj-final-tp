@@ -28,20 +28,25 @@ class AuthFilter(val userService: UserService, val objectMapper: ObjectMapper): 
         val headerValue = request.getHeader("Authorization")
         HeaderContext.setHeader(headerValue)
 
-        try {
-            user = userService.getAuthenticatedUser();
+        if(request.method == "GET"){
+            filterChain.doFilter(request, response);
+        }
+        else{
+            try {
+                user = userService.getAuthenticatedUser();
 
-            if (user != null) {
-                val roles = user.roles?.map { SimpleGrantedAuthority(it) }
-                val authentication = UsernamePasswordAuthenticationToken(user, null, roles)
-                SecurityContextHolder.getContext().authentication = authentication
-                filterChain.doFilter(request, response);
-            } else {
-                createResponse(HttpStatus.UNAUTHORIZED, "Request with invalid token", response)
+                if (user != null) {
+                    val roles = user.roles?.map { SimpleGrantedAuthority(it) }
+                    val authentication = UsernamePasswordAuthenticationToken(user, null, roles)
+                    SecurityContextHolder.getContext().authentication = authentication
+                    filterChain.doFilter(request, response);
+                } else {
+                    createResponse(HttpStatus.UNAUTHORIZED, "Request with invalid token", response)
+                }
+            } catch (e: FeignException) {
+                val status = HttpStatus.resolve(e.status()) ?: HttpStatus.FORBIDDEN
+                createResponse(status, e.localizedMessage, response)
             }
-        } catch (e: FeignException) {
-            val status = HttpStatus.resolve(e.status()) ?: HttpStatus.FORBIDDEN
-            createResponse(status, e.localizedMessage, response)
         }
 
         HeaderContext.clear()
