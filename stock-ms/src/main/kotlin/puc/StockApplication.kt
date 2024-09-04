@@ -5,7 +5,7 @@ import org.springframework.boot.runApplication
 
 
 @SpringBootApplication
-class StockApplication {}
+class StockApplication
 
 fun main(args: Array<String>) {
 	runApplication<StockApplication>(*args)
