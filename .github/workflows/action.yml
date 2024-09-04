@@ -31,7 +31,13 @@ jobs:
     
     - name: Check gradle version
       run: gradle --version
-        
+
+    - name: Build with Gradle
+      run: | 
+            cd user-ms/
+            ls
+            gradle wrapper --gradle-version 8.5 --distribution-type all
+      
     - name: Build with Gradle
       run: | 
             cd user-ms/
