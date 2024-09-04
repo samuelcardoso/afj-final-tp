@@ -66,7 +66,7 @@ class ProductController(
 
         productEventPublisher.publishProductRegisteredEvent(result)
 
-        return ResponseEntity.created(location).build()
+        return ResponseEntity.created(location).body(result)
     }
 
     @PutMapping("/{id}")
@@ -81,7 +81,7 @@ class ProductController(
             .path("/products/{id}")
             .buildAndExpand(result?.id).toUri()
 
-        return ResponseEntity.created(location).build()
+        return ResponseEntity.created(location).body(result)
     }
 
     @DeleteMapping("/{idProduct}")
