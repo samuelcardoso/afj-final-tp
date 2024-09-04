@@ -42,8 +42,12 @@ jobs:
       run: |
            cd user-ms
            ./gradlew test jacocoTestReport
-           ls
-
+           COVERAGE=$(./gradlew jacocoTestReport --console=plain | grep -oP 'TOTAL.*?\K\d+(?=%)')
+            if [ "$COVERAGE" -lt 40 ]; then
+              echo "Code coverage is below 40%: $COVERAGE%"
+              exit 1
+            fi
+            
     - name: Upload coverage report
       uses: actions/upload-artifact@v3
       with:
