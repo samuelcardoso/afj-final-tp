@@ -36,12 +36,7 @@ jobs:
       run: |
            cd user-ms
            gradle wrapper
-           ls
-      
-    - name: Build with Gradle
-      run: | 
-            ls
-            ./gradlew build
+           ./gradlew build
 
     - name: Run tests and generate coverage report
       run: ./gradlew test jacocoTestReport
