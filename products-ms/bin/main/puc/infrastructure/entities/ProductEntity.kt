@@ -10,17 +10,16 @@ import java.time.LocalDateTime
 data class ProductEntity(
     @Id
     val id: String? = null,
-    var name: String,
-    var price: Double,
-    var image:String,
-    var description: String,
-    var weight:Double,
-    var measure:String,
-    var color:String,
-    var category: String,
-    var brand:String,
-    val dataRegister: LocalDateTime = LocalDateTime.now(),
-    val username: String
+    val name: String,
+    val price: Double,
+    val image:String,
+    val description: String,
+    val weight:Double,
+    val measure:String,
+    val color:String,
+    val category: String,
+    val brand:String,
+    val dataRegister: LocalDateTime = LocalDateTime.now()
 ){
     constructor(product: Product): this(
         name = product.name,
@@ -30,9 +29,8 @@ data class ProductEntity(
         weight=product.weight,
         measure=product.measure,
         color=product.color,
-        category= product.category.name,
-        brand=product.brand,
-        username=product.username!!
+        category= product.category.description,
+        brand=product.brand
     )
 }
 

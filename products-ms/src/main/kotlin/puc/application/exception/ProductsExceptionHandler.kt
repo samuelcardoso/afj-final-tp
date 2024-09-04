@@ -3,6 +3,7 @@ package puc.application.exception
 import io.lettuce.core.RedisConnectionException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
@@ -43,4 +44,23 @@ class ProductsExceptionHandler: ResponseEntityExceptionHandler() {
         problemDetail.setProperty("timestamp", LocalDate.now())
         return problemDetail
     }
+
+    @ExceptionHandler(ResponseStatusException::class)
+    fun handleResponseStatusException(e: ResponseStatusException): ProblemDetail {
+        val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(e.statusCode, e.localizedMessage)
+        problemDetail.title = e.body.title
+        problemDetail.detail = e.body.detail
+        problemDetail.setProperty("timestamp", LocalDate.now())
+        return problemDetail
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(e: AccessDeniedException): ProblemDetail {
+        val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.localizedMessage)
+        problemDetail.title = "Forbidden"
+        problemDetail.detail = "${e.message}"
+        problemDetail.setProperty("timestamp", LocalDate.now())
+        return problemDetail
+    }
+
 }

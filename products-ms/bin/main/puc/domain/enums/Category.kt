@@ -17,9 +17,5 @@ enum class Category(val id: Int, val description: String) {
         fun fromValue(value: String): Category {
             return values().find { it.description == value } ?: UNKNOWN
         }
-
-        fun getCategoryByName(value: String): Category {
-            return values().find { it.name == value } ?: UNKNOWN
-        }
     }
 }
