@@ -26,7 +26,6 @@ class PurchaseController(val rabbitTemplate: RabbitTemplate, val jwtUtil: JwtUti
         val purchaseMessage = PurchaseMessage(userId, purchaseRequest.productId, purchaseRequest.quantity)
         val objectMapper = ObjectMapper()
         val messageAsString = objectMapper.writeValueAsString(purchaseMessage)
-        //rabbitTemplate.convertAndSend(exchange, routingKey, messageAsString)
         purchaseConsumer.receivePurchaseMessage(purchaseMessage)
         return ResponseEntity.ok("Purchase request sent.")
     }
