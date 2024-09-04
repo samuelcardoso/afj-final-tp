@@ -1,5 +1,7 @@
 package puc.config
 
+import org.springframework.amqp.core.BindingBuilder
+import org.springframework.amqp.core.Exchange
 import org.springframework.amqp.core.ExchangeBuilder
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
@@ -29,7 +31,7 @@ class RabbitMQConfig {
     }
 
     @Bean
-    fun exchange(): org.springframework.amqp.core.Exchange {
+    fun exchange(): Exchange {
         return ExchangeBuilder.directExchange(exchange).durable(true).build()
     }
 
@@ -55,7 +57,7 @@ class RabbitMQConfig {
 
     @Bean
     fun binding(): org.springframework.amqp.core.Binding {
-        return org.springframework.amqp.core.BindingBuilder
+        return BindingBuilder
             .bind(purchaseQueue())
             .to(exchange())
             .with(routingKey)

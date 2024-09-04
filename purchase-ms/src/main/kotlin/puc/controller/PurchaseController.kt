@@ -14,6 +14,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import puc.service.PurchaseService
 import jakarta.validation.Valid
+import puc.exceptions.ErrorTryingSoSendMessageMQException
+import puc.exceptions.ErrorTryingToProcessJSONException
 import kotlinx.serialization.encodeToString
 import puc.vo.JWT
 
@@ -32,23 +34,10 @@ class PurchaseController(
         try {
             val jwt = JWT.create(token, userMsRestTemplate);
             purchaseService.sendMessage(purchaseRequest, jwt.id)
-        }catch (e: AmqpException) {
-            return ResponseEntity.internalServerError().body("Failed to send message to MQ");
+        } catch (e: AmqpException) {
+            throw ErrorTryingSoSendMessageMQException("Failed to send message to MQ");
         } catch (e: JsonProcessingException) {
-            return ResponseEntity.internalServerError().body("Failed to process json");
-        } catch (e: RuntimeException) {
-            val errorMsg = e.message
-            if(errorMsg == null){
-                return ResponseEntity.internalServerError().body("Body of error is empty");
-            }
-            val jsonStartIndex = errorMsg.indexOf('{')
-            val jsonEndIndex = errorMsg.indexOf('}', jsonStartIndex)
-
-            val jsonString = errorMsg.substring(jsonStartIndex..jsonEndIndex)
-
-            val errorJson = Json.decodeFromString<ErrorGateway>(jsonString)
-            val errorResponseJson = Json.encodeToString(errorJson)
-            return ResponseEntity.status(errorJson.status).body(errorResponseJson);
+            throw ErrorTryingToProcessJSONException("Failed to process json");
         }
 
         return ResponseEntity.ok("Purchase request sent.") }
