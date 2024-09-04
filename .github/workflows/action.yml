@@ -1,0 +1,50 @@
+name: USER-MS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [ '21' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.7
+    
+    - name: Check gradle version
+      run: gradle --version
+
+    - name: Build with Gradle
+      run: |
+           cd user-ms
+           gradle wrapper
+           ./gradlew build
+
+    - name: Run tests and generate coverage report
+      run: |
+           cd user-ms
+           ./gradlew test jacocoTestReport
+ 
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: user-ms/build/reports/jacoco/test/html

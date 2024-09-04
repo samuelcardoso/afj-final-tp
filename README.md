@@ -1,3 +1,4 @@
+[![USER-MS CI](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml/badge.svg)](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml)
 # TP Final AFJ (Sistema Ecommerce em Java)
 
 Este é um monorepo para um sistema de ecommerce, contendo os seguintes domínios:
