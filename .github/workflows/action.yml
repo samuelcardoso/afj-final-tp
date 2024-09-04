@@ -28,7 +28,10 @@ jobs:
       uses: gradle/gradle-build-action@v2
 
     - name: Command CD 
-      run: cd user-ms/src
+      run: cd user-ms
+
+    - name: Command CD 
+      run: cd src
 
     - name: Command CD 
       run: ls
