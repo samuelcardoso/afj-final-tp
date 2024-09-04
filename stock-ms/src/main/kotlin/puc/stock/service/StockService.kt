@@ -11,6 +11,8 @@ interface StockService {
 
     fun addProductStock(stockUpdateRequest: StockUpdateRequest) : StockResponse
 
+    fun addStock(stockUpdateRequest: StockUpdateRequest) : StockResponse
+
     fun findStockByProductId(productId: String) : StockResponse
 
     fun findStockAll(pageable: Pageable) : Page<StockResponse>

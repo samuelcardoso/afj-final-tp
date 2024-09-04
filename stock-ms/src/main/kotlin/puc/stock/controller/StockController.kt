@@ -32,9 +32,17 @@ class StockController(val stockService: StockService) {
     @PostMapping("/add-product")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Adiciona um novo produto ao estoque")
-    fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockResponse> {
+    fun addProductStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockResponse> {
         logger.info("=== Adicionando produto [{}] ao estoque", stockUpdateRequest.productId)
         return ResponseEntity.ok(stockService.addProductStock(stockUpdateRequest))
+    }
+
+    @PatchMapping("/add-stock")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Adiciona estoque a um produto")
+    fun addStock(@Valid @RequestBody stockUpdateRequest: StockUpdateRequest) : ResponseEntity<StockResponse> {
+        logger.info("=== Adicionando stoque ao produto [{}]", stockUpdateRequest.productId)
+        return ResponseEntity.ok(stockService.addStock(stockUpdateRequest))
     }
 
     @GetMapping("/product/{productId}")

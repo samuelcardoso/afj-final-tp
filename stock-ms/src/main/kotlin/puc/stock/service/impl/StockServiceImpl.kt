@@ -61,6 +61,19 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
     }
 
     @Transactional
+    override fun addStock(stockUpdateRequest: StockUpdateRequest) : StockResponse {
+        val productStock = getCurrentProductStock(stockUpdateRequest.productId!!)
+
+        productStock.quantity += stockUpdateRequest.quantity!!
+
+        logger.info("=== Salvando estoque [{}]", productStock.toString())
+        val stockSaved = stockRepository.save(productStock)
+
+        logger.info("=== Estoque [{}] salvo", stockSaved.toString())
+        return stockSaved.toResponse()
+    }
+
+    @Transactional
     override fun findStockByProductId(productId: String) : StockResponse {
         val stock = stockRepository.findByProductId(productId)
             ?: throw ProductNotFoundException(String.format("Produto com id [%s] não encontrado na base de estoques", productId))
@@ -88,6 +101,7 @@ class StockServiceImpl(val stockRepository: StockRepository, val productService 
     private fun getCurrentProductStock(productId: String) : Stock  {
         return this.findStockByProductId(productId).toEntity()
     }
+
     private fun isNotEligibleProductStock(stockUpdateRequest: StockUpdateRequest, productStock: Stock): Boolean {
         logger.info("=== [isNotEligibleProductStock] Id do produto: [{}]  Quantidade disponivel [{}]. Quantidade Solicitada [{}]", productStock.productId, productStock.quantity, stockUpdateRequest.quantity)
         return productStock.quantity < stockUpdateRequest.quantity!!
