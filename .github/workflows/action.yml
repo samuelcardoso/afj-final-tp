@@ -26,7 +26,10 @@ jobs:
 
     - name: Set up Gradle
       uses: gradle/gradle-build-action@v2
-
+   
+    - name: Command CD 
+      run: cd user-ms
+      
     - name: Build with Gradle
       run: ./gradlew build
 
