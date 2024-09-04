@@ -3,7 +3,6 @@ package puc.vo
 import org.springframework.web.client.HttpClientErrorException
 import puc.dto.response.UserResponse
 import puc.exceptions.ErrorCreatingJWTException
-import puc.exceptions.ErrorTryingToConnectException
 import puc.gateway.UserMsRestTemplate
 
 class JWT private constructor(val token: String,
