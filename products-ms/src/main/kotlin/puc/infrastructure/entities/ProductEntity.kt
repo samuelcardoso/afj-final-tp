@@ -19,7 +19,8 @@ data class ProductEntity(
     var color:String,
     var category: String,
     var brand:String,
-    val dataRegister: LocalDateTime = LocalDateTime.now()
+    val dataRegister: LocalDateTime = LocalDateTime.now(),
+    val username: String
 ){
     constructor(product: Product): this(
         name = product.name,
@@ -30,7 +31,8 @@ data class ProductEntity(
         measure=product.measure,
         color=product.color,
         category= product.category.name,
-        brand=product.brand
+        brand=product.brand,
+        username=product.username!!
     )
 }
 

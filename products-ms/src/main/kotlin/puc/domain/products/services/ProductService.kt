@@ -15,11 +15,14 @@ import puc.domain.products.mappers.ProductMapper
 import puc.application.controllers.ProductController
 import puc.domain.enums.Category
 import puc.domain.products.services.exceptions.ProductNotFoundException
+import puc.domain.users.model.User
+import puc.domain.users.services.UserService
 
 @Service
 class ProductService(
-    val productRepository: ProductRepository
-) : IProductService {
+    val productRepository: ProductRepository,
+    val userService: UserService
+) : IProductService{
 
     val logger = LoggerFactory.getLogger(this.javaClass)!!
 
@@ -58,7 +61,11 @@ class ProductService(
         return ProductMapper.entityToDomain(result)
     }
 
-    override fun save(product: Product): Product {
+    override fun save(product: Product, user: User?): Product {
+        if (user != null) {
+            product.username = user.username
+        }
+
         logger.info("Saving product with name ${product.name}")
 
         val result = productRepository.save(ProductEntity(product))
