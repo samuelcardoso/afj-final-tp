@@ -1,4 +1,3 @@
-[![USER-MS CI](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml/badge.svg)](https://github.com/atiliosilfer/afj-final-tp/actions/workflows/action.yml)
 # TP Final AFJ (Sistema Ecommerce em Java)
 
 Este é um monorepo para um sistema de ecommerce, contendo os seguintes domínios:
@@ -91,11 +90,3 @@ Vinícius de Oliveira Baldenebro - 210157
   - Senha: `guest`
 
 ---
-## Grupo - Contexto 3: purchase-ms (message producer)
-
-### Integrantes
-
-* 207854 - Irla Paula Andrade Amaral
-* 212017 - Jose Carlos Macedo Lacerda
-* 208178 - Jose Carlos Pereira Silva Filho
-* 207042 - Ryan Souza Camargos de Oliveira

@@ -1,4 +1,4 @@
-import java.time.LocalDateTime
+package puc.exceptions
 
 data class ErrorResponse(
     val message: String?,
