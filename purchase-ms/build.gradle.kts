@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.spring") version "1.8.22"
     kotlin("plugin.jpa") version "1.8.22"
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "puc"
@@ -23,7 +24,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation ("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

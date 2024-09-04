@@ -1,17 +1,13 @@
 package puc.util
 
 import org.springframework.stereotype.Component
+import puc.gateway.UserMsRestTemplate
 
 @Component
-class JwtUtil {
+class JwtUtil(val userMsRestTemplate: UserMsRestTemplate) {
 
-    private val secretKey = "mySecretKey"
-
-    fun validateToken(token: String): Boolean {
-        return true
-    }
-
-    fun extractUserId(token: String): Long {
-        return 1
+    fun getUserId(token: String): Long {
+        val userResponse = userMsRestTemplate.getMe(token).orElseThrow{ RuntimeException("Failed to authenticate.") }
+        return userResponse.id ?: throw RuntimeException("ID not present in the response.");
     }
 }
