@@ -31,9 +31,6 @@ jobs:
       run: cd user-ms
 
     - name: Command CD 
-      run: cd src
-
-    - name: Command CD 
       run: ls
       
     - name: Build with Gradle
