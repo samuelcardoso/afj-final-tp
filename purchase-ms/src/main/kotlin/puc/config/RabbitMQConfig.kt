@@ -1,7 +1,6 @@
 package puc.config
 
-import org.springframework.amqp.core.ExchangeBuilder
-import org.springframework.amqp.core.Queue
+import org.springframework.amqp.core.*
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.beans.factory.annotation.Value
@@ -20,9 +19,31 @@ class RabbitMQConfig {
     @Value("\${rabbitmq.queue}")
     lateinit var purchaseQueue: String
 
+    @Value("\${rabbitmq.retry.ttl:60000}")
+    var retryTtl: Long = 60000
+
+    @Value("\${rabbitmq.retry.attempts:5}")
+    var maxRetryAttempts: Int = 5
+
+    @Bean
+    fun dlqQueueName(): String {
+        return "${purchaseQueue}_ERROR"
+    }
+
     @Bean
     fun purchaseQueue(): Queue {
-        return Queue(purchaseQueue, true)
+        val args = mapOf(
+            "x-dead-letter-exchange" to exchange,
+            "x-dead-letter-routing-key" to routingKey + "_ERROR",
+            "x-message-ttl" to retryTtl,
+            "x-max-length" to maxRetryAttempts
+        )
+        return Queue(purchaseQueue, true, false, false, args)
+    }
+
+    @Bean
+    fun dlqQueue(): Queue {
+        return Queue(dlqQueueName(), true)
     }
 
     @Bean
@@ -36,11 +57,20 @@ class RabbitMQConfig {
     }
 
     @Bean
-    fun binding(): org.springframework.amqp.core.Binding {
-        return org.springframework.amqp.core.BindingBuilder
+    fun purchaseBinding(): org.springframework.amqp.core.Binding {
+        return BindingBuilder
             .bind(purchaseQueue())
             .to(exchange())
             .with(routingKey)
+            .noargs()
+    }
+
+    @Bean
+    fun dlqBinding(): org.springframework.amqp.core.Binding {
+        return BindingBuilder
+            .bind(dlqQueue())
+            .to(exchange())
+            .with(dlqQueueName())
             .noargs()
     }
 }
