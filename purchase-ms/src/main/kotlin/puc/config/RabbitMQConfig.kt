@@ -34,9 +34,9 @@ class RabbitMQConfig {
     fun purchaseQueue(): Queue {
         val args = mapOf(
             "x-dead-letter-exchange" to exchange,
-            "x-dead-letter-routing-key" to routingKey + "_ERROR",
+            "x-dead-letter-routing-key" to dlqQueueName(),
             "x-message-ttl" to retryTtl,
-            "x-max-length" to maxRetryAttempts
+            "delivery-limit" to maxRetryAttempts
         )
         return Queue(purchaseQueue, true, false, false, args)
     }
